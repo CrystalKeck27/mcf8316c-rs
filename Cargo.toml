@@ -4,3 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+crc = "3.3.0"
+embedded-hal = "1.0.0"
+strum = { version = "0.27.1", features = ["strum_macros", "derive"] }
+
+[lints.clippy]
+undocumented_unsafe_blocks = "warn"
+missing_panics_doc = "warn"
+std_instead_of_core = "warn"
+fallible_impl_from = "warn"
