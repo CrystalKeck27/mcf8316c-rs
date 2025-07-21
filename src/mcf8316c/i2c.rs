@@ -1,3 +1,5 @@
+use arbitrary_int::*;
+
 /// Alias for the CRC algorithm used by the MCF8316C-Q1.
 /// The library has the correct name, but the datasheet for the MCF8316C-Q1
 /// refers to it as CCIT. See section 7.6.2.6 of the MCF8316C-Q1 datasheet.
@@ -34,11 +36,11 @@ pub struct ControlWord {
     /// Each memory location in MCF8316C-Q1 is addressed using three separate
     /// entities in the control word – Memory Section, Memory Page, Memory Address. Memory Section is a 4-bit field
     /// which denotes the memory section to which the memory location belongs like RAM, ROM etc.
-    pub mem_sec: u8,
+    pub mem_sec: u4,
     /// # Memory Page
     /// Memory page is a 4-bit field which denotes the memory page to which the
     /// memory location belongs.
-    pub mem_page: u8,
+    pub mem_page: u4,
     /// # Memory Address
     /// Memory address is the last 12-bits of the address. The complete 22-bit
     /// address is constructed internally by MCF8316C-Q1 using all three fields – Memory Section, Memory Page,
@@ -46,7 +48,7 @@ pub struct ControlWord {
     /// and memory address is the lowest 12 bits(0x000 for 0x000000, 0x080 for 0x000080 and 0x800 for 0x000800).
     /// All relevant memory locations (EEPROM and RAM variables) have MEM_SEC and MEM_PAGE values both
     /// corresponding to 0x0. All other MEM_SEC, MEM_PAGE values are reserved and not for external use.
-    pub mem_addr: u16,
+    pub mem_addr: u12,
 }
 
 impl ControlWord {
@@ -56,9 +58,9 @@ impl ControlWord {
             op_rw: is_read,
             crc_en,
             dlen,
-            mem_sec: 0,
-            mem_page: 0,
-            mem_addr,
+            mem_sec: u4::new(255),
+            mem_page: u4::new(0),
+            mem_addr: u12::new(mem_addr),
         }
     }
 
@@ -77,9 +79,9 @@ impl ControlWord {
         bytes[0] = ((self.op_rw as u8) << 7)
             | ((self.crc_en as u8) << 6)
             | ((self.dlen as u8) << 4)
-            | (self.mem_sec & 0x0F);
-        bytes[1] = ((self.mem_page & 0x0F) << 4) | ((self.mem_addr >> 8) & 0x0F) as u8;
-        bytes[2] = (self.mem_addr & 0xFF) as u8;
+            | (self.mem_sec.as_u8() & 0x0F);
+        bytes[1] = ((self.mem_page.as_u8() & 0x0F) << 4) | ((self.mem_addr.as_u16() >> 8) & 0x0F) as u8;
+        bytes[2] = (self.mem_addr.as_u16() & 0xFF) as u8;
     }
 }
 
