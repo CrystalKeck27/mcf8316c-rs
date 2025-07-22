@@ -239,9 +239,9 @@ impl PartialOrd for MaximumBusVoltage {
 impl Ord for MaximumBusVoltage {
     fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         match (self, other) {
-            (MaximumBusVoltage::NoLimit, MaximumBusVoltage::NoLimit) => std::cmp::Ordering::Equal,
-            (MaximumBusVoltage::NoLimit, _) => std::cmp::Ordering::Greater,
-            (_, MaximumBusVoltage::NoLimit) => std::cmp::Ordering::Less,
+            (MaximumBusVoltage::NoLimit, MaximumBusVoltage::NoLimit) => core::cmp::Ordering::Equal,
+            (MaximumBusVoltage::NoLimit, _) => core::cmp::Ordering::Greater,
+            (_, MaximumBusVoltage::NoLimit) => core::cmp::Ordering::Less,
             _ => (*self as u8).cmp(&(*other as u8)),
         }
     }
@@ -285,9 +285,9 @@ impl PartialOrd for AutoRetryTimes {
 impl Ord for AutoRetryTimes {
     fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         match (self, other) {
-            (AutoRetryTimes::NoLimit, AutoRetryTimes::NoLimit) => std::cmp::Ordering::Equal,
-            (AutoRetryTimes::NoLimit, _) => std::cmp::Ordering::Greater,
-            (_, AutoRetryTimes::NoLimit) => std::cmp::Ordering::Less,
+            (AutoRetryTimes::NoLimit, AutoRetryTimes::NoLimit) => core::cmp::Ordering::Equal,
+            (AutoRetryTimes::NoLimit, _) => core::cmp::Ordering::Greater,
+            (_, AutoRetryTimes::NoLimit) => core::cmp::Ordering::Less,
             _ => (*self as u8).cmp(&(*other as u8)),
         }
     }

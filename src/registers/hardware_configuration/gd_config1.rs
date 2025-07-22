@@ -1,7 +1,7 @@
 use super::*;
 use bitbybit::*;
 
-const GD_CONFIG1_RESET: u32 = 0b_00010000_00100010_10000001_00000000;
+pub const GD_CONFIG1_RESET: u32 = 0b_00010000_00100010_10000001_00000000;
 
 #[bitfield(u32)]
 #[derive(Debug, PartialEq, Eq)]

@@ -49,18 +49,6 @@ pub enum DacSoxSel {
     Soc = 0x3,
 }
 
-impl From<u8> for DacSoxSel {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => DacSoxSel::DacOut2,
-            0x1 => DacSoxSel::Soa,
-            0x2 => DacSoxSel::Sob,
-            0x3 => DacSoxSel::Soc,
-            _ => panic!("Invalid DacSoxSel value"),
-        }
-    }
-}
-
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum SlewRate {
@@ -76,18 +64,6 @@ pub enum SlewRate {
     /// 30.8 mA
     #[strum(to_string = "30.8 mA")]
     M30_8 = 0x3,
-}
-
-impl From<u8> for SlewRate {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => SlewRate::M4_8,
-            0x1 => SlewRate::M3_9,
-            0x2 => SlewRate::M1_86,
-            0x3 => SlewRate::M30_8,
-            _ => panic!("Invalid SlewRate value"),
-        }
-    }
 }
 
 impl PartialOrd for SlewRate {

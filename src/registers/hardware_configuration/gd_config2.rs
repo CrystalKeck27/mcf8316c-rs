@@ -1,7 +1,7 @@
 use super::*;
 use bitbybit::*;
 
-const GD_CONFIG2_RESET: u32 = 0b_00000001_01000000_00000000_00000000;
+pub const GD_CONFIG2_RESET: u32 = 0b_00000001_01000000_00000000_00000000;
 
 #[bitfield(u32)]
 #[derive(Debug, PartialEq, Eq)]
@@ -66,18 +66,6 @@ impl BuckVoltage {
             BuckVoltage::V5_0 => 5.0,
             BuckVoltage::V4_0 => 4.0,
             BuckVoltage::V5_7 => 5.7,
-        }
-    }
-}
-
-impl From<u8> for BuckVoltage {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => BuckVoltage::V3_3,
-            0x1 => BuckVoltage::V5_0,
-            0x2 => BuckVoltage::V4_0,
-            0x3 => BuckVoltage::V5_7,
-            _ => panic!("Invalid value for BuckVoltage: {}", value),
         }
     }
 }
