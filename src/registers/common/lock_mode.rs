@@ -1,5 +1,8 @@
-#[derive(Debug, Clone, Copy, strum::Display)]
-#[repr(u8)]
+use arbitrary_int::*;
+use bitbybit::bitenum;
+
+#[bitenum(u4, exhaustive = true)]
+#[derive(Debug, strum::Display)]
 pub enum LockModeRaw {
     /// Lock detection causes latched fault; nFAULT active; Gate driver is tristated
     #[strum(to_string = "Lock detection causes latched fault; nFAULT active; Gate driver is tristated")]
@@ -51,30 +54,6 @@ pub enum LockModeRaw {
     Disable7 = 0xF,
 }
 
-impl From<u8> for LockModeRaw {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => LockModeRaw::TristateNoRetry,
-            0x1 => LockModeRaw::TristateNoRetry2,
-            0x2 => LockModeRaw::HighSideBrakeNoRetry,
-            0x3 => LockModeRaw::LowSideBrakeNoRetry,
-            0x4 => LockModeRaw::TristateAutoRetry,
-            0x5 => LockModeRaw::TristateAutoRetry2,
-            0x6 => LockModeRaw::HighSideBrakeAutoRetry,
-            0x7 => LockModeRaw::LowSideBrakeAutoRetry,
-            0x8 => LockModeRaw::Report,
-            0x9 => LockModeRaw::Disable,
-            0xA => LockModeRaw::Disable2,
-            0xB => LockModeRaw::Disable3,
-            0xC => LockModeRaw::Disable4,
-            0xD => LockModeRaw::Disable5,
-            0xE => LockModeRaw::Disable6,
-            0xF => LockModeRaw::Disable7,
-            _ => panic!("Invalid value for LockMode: {}", value),
-        }
-    }
-}
-
 impl PartialEq for LockModeRaw {
     fn eq(&self, other: &Self) -> bool {
         let self_mode: LockMode = (*self).into();
@@ -114,7 +93,7 @@ impl From<LockMode> for LockModeRaw {
                 if allow_retry {
                     value |= 0x4; // Set the retry bit
                 }
-                value.into()
+                LockModeRaw::new_with_raw_value(u4::masked_new(value))
             }
             LockMode::Report => LockModeRaw::Report,
             LockMode::Disable => LockModeRaw::Disable,
