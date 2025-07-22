@@ -1,21 +1,30 @@
-pub use super::*;
+use super::*;
+use arbitrary_int::*;
+use bitbybit::*;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[bitfield(u32)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct DeviceConfig1 {
     /// Selects between DAC2 and SOx channels
+    #[bits(28..=29, rw)]
     pub dac_sox_sel: DacSoxSel,
     /// DAC1 and DAC2 enables.
     /// 0 = DACOUT1 and DACOUT2 on dedicated DAC pins disabled,
     /// 1 = DACOUT1 and DACOUT2 on dedicated DAC pins enabled
+    #[bit(27, rw)]
     pub dac_enable: bool,
     /// I2C target address
-    pub i2c_target_address: u8,
+    #[bits(20..=26, rw)]
+    pub i2c_target_address: u7,
     /// Slew rate control for I2C pins
+    #[bits(3..=4, rw)]
     pub slew_rate_i2c_pins: SlewRate,
     /// Pull-up enable for nFAULT and FG pins.
     /// 0 = Disable, 1 = Enable
+    #[bit(2, rw)]
     pub pullup_enable: bool,
     /// Maximum DC bus voltage configuration
+    #[bits(0..=1, rw)]
     pub bus_volt: MaxBusVoltage,
 }
 
@@ -23,34 +32,8 @@ impl Register for DeviceConfig1 {
     const ADDRESS: u16 = DEVICE_CONFIG1; // Example address, replace with actual address
 }
 
-impl From<DeviceConfig1> for u32 {
-    fn from(config: DeviceConfig1) -> Self {
-        let mut value = 0;
-        value |= (config.dac_sox_sel as u32) << 28;
-        value |= (config.dac_enable as u32) << 27;
-        value |= (config.i2c_target_address as u32 & 0x7F) << 20; // 7 bits
-        value |= (config.slew_rate_i2c_pins as u32) << 3;
-        value |= (config.pullup_enable as u32) << 2;
-        value |= config.bus_volt as u32;
-        value
-    }
-}
-
-impl From<u32> for DeviceConfig1 {
-    fn from(value: u32) -> Self {
-        DeviceConfig1 {
-            dac_sox_sel: DacSoxSel::from(((value >> 28) & 0x3) as u8),
-            dac_enable: ((value >> 27) & 0x1) != 0,
-            i2c_target_address: ((value >> 20) & 0x7F) as u8,
-            slew_rate_i2c_pins: SlewRate::from(((value >> 3) & 0x3) as u8),
-            pullup_enable: ((value >> 2) & 0x1) != 0,
-            bus_volt: MaxBusVoltage::from((value & 0x3) as u8),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum DacSoxSel {
     /// DACOUT2
     #[strum(to_string = "DACOUT2")]
@@ -78,8 +61,8 @@ impl From<u8> for DacSoxSel {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum SlewRate {
     /// 4.8 mA
     #[strum(to_string = "4.8 mA")]
@@ -115,12 +98,12 @@ impl PartialOrd for SlewRate {
 
 impl Ord for SlewRate {
     fn cmp(&self, other: &Self) -> core::cmp::Ordering {
-        self.to_amps().total_cmp(&other.to_amps())
+        self.to_milliamps().total_cmp(&other.to_milliamps())
     }
 }
 
 impl SlewRate {
-    fn to_amps(self) -> f32 {
+    fn to_milliamps(self) -> f32 {
         match self {
             SlewRate::M4_8 => 4.8,
             SlewRate::M3_9 => 3.9,
@@ -130,8 +113,8 @@ impl SlewRate {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MaxBusVoltage {
     /// 15 V
     #[strum(to_string = "15 V")]
@@ -145,18 +128,6 @@ pub enum MaxBusVoltage {
     /// Not Defined
     #[strum(to_string = "Not Defined")]
     NotDefined = 0x3,
-}
-
-impl From<u8> for MaxBusVoltage {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => MaxBusVoltage::V15,
-            0x1 => MaxBusVoltage::V30,
-            0x2 => MaxBusVoltage::V60,
-            0x3 => MaxBusVoltage::NotDefined,
-            _ => panic!("Invalid MaxBusVoltage value"),
-        }
-    }
 }
 
 impl PartialOrd for MaxBusVoltage {

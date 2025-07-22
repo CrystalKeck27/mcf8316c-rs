@@ -1,34 +1,45 @@
 use super::*;
+use bitbybit::*;
 
 const GD_CONFIG1_RESET: u32 = 0b_00010000_00100010_10000001_00000000;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[bitfield(u32)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct GdConfig1 {
     /// Parity bit
+    #[bit(31, rw)]
     parity: bool,
     /// Slew rate
-    pub slew_rate: SlewRate,
+    #[bits(26..=27, rw)]
+    pub slew_rate: Option<SlewRate>,
     /// Overvoltage level.
     /// 0 = VM overvoltage level is 34-V,
     /// 1 = VM overvoltage level is 22-V
+    #[bit(19, rw)]
     pub ovp_sel: bool,
     /// Overvoltage enable.
     /// 0 = Overvoltage protection is disabled,
     /// 1 = Overvoltage protection is enabled
+    #[bit(18, rw)]
     pub ovp_en: bool,
     /// Overtemperature warning enable.
     /// 0 = Over temperature reporting on nFAULT is disabled,
     /// 1 = Over temperature reporting on nFAULT is enabled
+    #[bit(16, rw)]
     pub otw_rep: bool,
     /// OCP Deglitch Time Settings
+    #[bits(12..=13, rw)]
     pub ocp_deg: OvercurrentDeglitch,
     /// Overcurrent Level Setting
     /// 0 = OCP level is 16 A (Typical)
     /// 1 = OCP level is 24 A (Typical)
+    #[bit(10, rw)]
     pub ocp_lvl: bool,
     /// OCP Fault Mode
-    pub ocp_mode: OvercurrentMode,
+    #[bits(8..=9, rw)]
+    pub ocp_mode: Option<OvercurrentMode>,
     /// Current Sense Amplifier gain (used only if DYNAMIC_CSA_GAIN_EN = 0b)
+    #[bits(0..=1, rw)]
     pub csa_gain: CurrentSenseAmplifierGain,
 }
 
@@ -36,48 +47,9 @@ impl Register for GdConfig1 {
     const ADDRESS: u16 = GD_CONFIG1; // Example address, replace with actual address
 }
 
-// TODO: Remove parity field and calculate it on the fly
-impl From<GdConfig1> for u32 {
-    fn from(config: GdConfig1) -> Self {
-        let mut value = GD_CONFIG1_RESET;
-        value |= (config.parity as u32) << 31;
-        value |= (config.slew_rate as u32) << 26;
-        value |= (config.ovp_sel as u32) << 19;
-        value |= (config.ovp_en as u32) << 18;
-        value |= (config.otw_rep as u32) << 16;
-        value |= (config.ocp_deg as u32) << 12;
-        value |= (config.ocp_lvl as u32) << 10;
-        value |= (config.ocp_mode as u32) << 8;
-        value |= config.csa_gain as u32;
-        value
-    }
-}
-
-impl From<u32> for GdConfig1 {
-    fn from(value: u32) -> Self {
-        GdConfig1 {
-            parity: (value >> 31) & 0x1 != 0,
-            slew_rate: SlewRate::from(((value >> 26) & 0x3) as u8),
-            ovp_sel: (value >> 19) & 0x1 != 0,
-            ovp_en: (value >> 18) & 0x1 != 0,
-            otw_rep: (value >> 16) & 0x1 != 0,
-            ocp_deg: OvercurrentDeglitch::from(((value >> 12) & 0x3) as u8),
-            ocp_lvl: (value >> 10) & 0x1 != 0,
-            ocp_mode: OvercurrentMode::from(((value >> 8) & 0x3) as u8),
-            csa_gain: CurrentSenseAmplifierGain::from((value & 0x3) as u8),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = false)]
+#[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum SlewRate {
-    /// NotApplicable
-    #[strum(to_string = "Not Applicable")]
-    NotApplicable = 0x0,
-    /// Not Applicable
-    #[strum(to_string = "Not Applicable")]
-    NotApplicable2 = 0x1,
     /// Slew rate is 125 V/μs
     #[strum(to_string = "125 V/μs")]
     V125 = 0x2,
@@ -86,20 +58,8 @@ pub enum SlewRate {
     V200 = 0x3,
 }
 
-impl From<u8> for SlewRate {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => SlewRate::NotApplicable,
-            0x1 => SlewRate::NotApplicable2,
-            0x2 => SlewRate::V125,
-            0x3 => SlewRate::V200,
-            _ => panic!("Invalid value for SlewRate: {}", value),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum OvercurrentDeglitch {
     /// 0.2 microseconds
     #[strum(to_string = "0.2 μs")]
@@ -115,19 +75,8 @@ pub enum OvercurrentDeglitch {
     U1_6 = 0x3,
 }
 
-impl From<u8> for OvercurrentDeglitch {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => OvercurrentDeglitch::U0_2,
-            0x1 => OvercurrentDeglitch::U0_6,
-            0x2 => OvercurrentDeglitch::U1_1,
-            0x3 => OvercurrentDeglitch::U1_6,
-            _ => panic!("Invalid value for OvercurrentDeglitch: {}", value),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, strum::Display)]
+#[bitenum(u2, exhaustive = false)]
+#[derive(Debug, PartialEq, Eq, strum::Display)]
 #[repr(u8)]
 pub enum OvercurrentMode {
     /// Overcurrnt causes a latched fault
@@ -136,28 +85,10 @@ pub enum OvercurrentMode {
     /// Overcurrent causes an automatic retrying fault after 500ms
     #[strum(to_string = "Retry")]
     Retry = 0x1,
-    /// Not Applicable
-    #[strum(to_string = "Not Applicable")]
-    NotApplicable = 0x2,
-    /// Not Applicable
-    #[strum(to_string = "Not Applicable")]
-    NotApplicable2 = 0x3,
 }
 
-impl From<u8> for OvercurrentMode {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => OvercurrentMode::LatchedFault,
-            0x1 => OvercurrentMode::Retry,
-            0x2 => OvercurrentMode::NotApplicable,
-            0x3 => OvercurrentMode::NotApplicable2,
-            _ => panic!("Invalid value for OvercurrentMode: {}", value),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum CurrentSenseAmplifierGain {
     /// CSA gain is 0.15 V/A
     #[strum(to_string = "0.15 V/A")]
@@ -171,16 +102,4 @@ pub enum CurrentSenseAmplifierGain {
     /// CSA gain is 1.2 V/A
     #[strum(to_string = "1.2 V/A")]
     VA1_2 = 0x3,
-}
-
-impl From<u8> for CurrentSenseAmplifierGain {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => CurrentSenseAmplifierGain::VA0_15,
-            0x1 => CurrentSenseAmplifierGain::VA0_3,
-            0x2 => CurrentSenseAmplifierGain::VA0_6,
-            0x3 => CurrentSenseAmplifierGain::VA1_2,
-            _ => panic!("Invalid value for CurrentSenseAmplifierGain: {}", value),
-        }
-    }
 }

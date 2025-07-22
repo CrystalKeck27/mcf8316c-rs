@@ -1,21 +1,28 @@
 use super::*;
+use bitbybit::*;
 
 const GD_CONFIG2_RESET: u32 = 0b_00000001_01000000_00000000_00000000;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[bitfield(u32)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct GdConfig2 {
+    #[bit(31, rw)]
     parity: bool,
     /// Buck power sequencing disable.
     /// 0 = Buck power sequencing is enabled,
     /// 1 = Buck power sequencing is disabled
+    #[bit(24, rw)]
     pub buck_ps_dis: bool,
     /// Buck current limit.
     /// 0 = Buck regulator current limit is set to 600 mA,
     /// 1 = Buck regulator current limit is set to 150 mA
+    #[bit(23, rw)]
     pub buck_cl: bool,
     /// Buck voltage
+    #[bits(21..=22, rw)]
     pub buck_sel: BuckVoltage,
     /// Minimum ON time for low side MOSFET
+    #[bits(17..=19, rw)]
     pub min_on_time: MinOnTime,
 }
 
@@ -23,31 +30,8 @@ impl Register for GdConfig2 {
     const ADDRESS: u16 = GD_CONFIG2; // Example address, replace with actual address
 }
 
-impl From<GdConfig2> for u32 {
-    fn from(config: GdConfig2) -> Self {
-        let mut value = GD_CONFIG2_RESET;
-        value |= (config.parity as u32) << 31;
-        value |= (config.buck_ps_dis as u32) << 24;
-        value |= (config.buck_cl as u32) << 23;
-        value |= (config.buck_sel as u32) << 21;
-        value |= (config.min_on_time as u32) << 17;
-        value
-    }
-}
-
-impl From<u32> for GdConfig2 {
-    fn from(value: u32) -> Self {
-        GdConfig2 {
-            parity: (value >> 31) & 0x1 != 0,
-            buck_ps_dis: (value >> 24) & 0x1 != 0,
-            buck_cl: (value >> 23) & 0x1 != 0,
-            buck_sel: BuckVoltage::from(((value >> 21) & 0x3) as u8),
-            min_on_time: MinOnTime::from(((value >> 17) & 0x7) as u8),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, strum::Display)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum BuckVoltage {
     /// 3.3V
     #[strum(to_string = "3.3 V")]
@@ -98,7 +82,8 @@ impl From<u8> for BuckVoltage {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, strum::Display)]
+#[bitenum(u3, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MinOnTime {
     /// 0μs
     #[strum(to_string = "0µs")]
@@ -124,22 +109,6 @@ pub enum MinOnTime {
     /// 2.0μs
     #[strum(to_string = "2.0µs")]
     Us2_0 = 0x7,
-}
-
-impl From<u8> for MinOnTime {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => MinOnTime::Us0,
-            0x1 => MinOnTime::Auto,
-            0x2 => MinOnTime::Us0_5,
-            0x3 => MinOnTime::Us0_75,
-            0x4 => MinOnTime::Us1_0,
-            0x5 => MinOnTime::Us1_25,
-            0x6 => MinOnTime::Us1_5,
-            0x7 => MinOnTime::Us2_0,
-            _ => panic!("Invalid value for MinOnTime: {}", value),
-        }
-    }
 }
 
 impl PartialOrd for MinOnTime {
