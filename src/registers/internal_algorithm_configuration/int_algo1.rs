@@ -1,38 +1,54 @@
 use super::*;
+use bitbybit::*;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[bitfield(u32)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct IntAlgo1 {
     /// Difference between final speed and present speed below which
     /// active braking will be stopped
+    #[bits(29..=30, rw)]
     pub active_brake_speed_delta_limit_exit: SpeedDeltaLimitExit,
     /// Glitch filter applied on speed pin input
+    #[bits(27..=28, rw)]
     pub speed_pin_glitch_filter: SpeedPinGlitchFilter,
     /// Enable fast speed detection during ISD.
     /// 0 = Disable Fast ISD,
     /// 1 = Enable Fast ISD
+    #[bit(26, rw)]
     pub fast_isd_en: bool,
     /// Persistence time for declaring motor has stopped
+    #[bits(24..=25, rw)]
     pub isd_stop_time: PersistanceTime,
     /// Persistence time for declaring motor is running
+    #[bits(22..=23, rw)]
     pub isd_run_time: PersistanceTime,
     /// Timeout in case ISD is unable to reliably detect speed or direction
+    #[bits(20..=21, rw)]
     pub isd_timeout: IsdTimeout,
     /// Minimum BEMF for handoff
+    #[bits(17..=19, rw)]
     pub auto_handoff_min_bemf: AutoHandoffBemf,
     /// Persistence time for current below threshold during current based ISD brake
+    #[bits(15..=16, rw)]
     pub brake_current_persist: BrakeCurrentPersist,
     /// IPD current limit for MPET
+    #[bits(13..=14, rw)]
     pub mpet_ipd_current_limit: MpetIpdCurrentLimit,
     /// Number of times IPD is executed for MPET
+    #[bits(11..=12, rw)]
     pub mpet_ipd_freq: MpetIpdCount,
     /// Open loop current reference for MPET
+    #[bits(8..=10, rw)]
     pub mpet_open_loop_current_ref: MpetOpenLoopCurrentRef,
     /// Open loop speed reference for MPET (% of MAX_SPEED)
+    #[bits(6..=7, rw)]
     pub mpet_open_loop_speed_ref: MpetOpenLoopSpeedRef,
     /// Open loop acceleration for MPET
+    #[bits(3..=5, rw)]
     pub mpet_open_loop_slew_rate: MpetOpenLoopSlewRate,
     /// % of open loop acceleration to be applied during open loop
     /// deceleration in reverse drive
+    #[bits(0..=2, rw)]
     pub rev_drv_open_loop_dec: ReverseOpenLoopDeceleration,
 }
 
@@ -40,50 +56,8 @@ impl Register for IntAlgo1 {
     const ADDRESS: u16 = INT_ALGO_1;
 }
 
-impl From<IntAlgo1> for u32 {
-    fn from(config: IntAlgo1) -> Self {
-        let mut value = 0;
-        value |= (config.active_brake_speed_delta_limit_exit as u32) << 29;
-        value |= (config.speed_pin_glitch_filter as u32) << 27;
-        value |= (config.fast_isd_en as u32) << 26;
-        value |= (config.isd_stop_time as u32) << 24;
-        value |= (config.isd_run_time as u32) << 22;
-        value |= (config.isd_timeout as u32) << 20;
-        value |= (config.auto_handoff_min_bemf as u32) << 17;
-        value |= (config.brake_current_persist as u32) << 15;
-        value |= (config.mpet_ipd_current_limit as u32) << 13;
-        value |= (config.mpet_ipd_freq as u32) << 11;
-        value |= (config.mpet_open_loop_current_ref as u32) << 8;
-        value |= (config.mpet_open_loop_speed_ref as u32) << 6;
-        value |= (config.mpet_open_loop_slew_rate as u32) << 3;
-        value |= config.rev_drv_open_loop_dec as u32;
-        value
-    }
-}
-
-impl From<u32> for IntAlgo1 {
-    fn from(value: u32) -> Self {
-        IntAlgo1 {
-            active_brake_speed_delta_limit_exit: SpeedDeltaLimitExit::from(((value >> 29) & 0x03) as u8),
-            speed_pin_glitch_filter: SpeedPinGlitchFilter::from(((value >> 27) & 0x03) as u8),
-            fast_isd_en: ((value >> 26) & 0x01) != 0,
-            isd_stop_time: PersistanceTime::from(((value >> 24) & 0x03) as u8),
-            isd_run_time: PersistanceTime::from(((value >> 22) & 0x03) as u8),
-            isd_timeout: IsdTimeout::from(((value >> 20) & 0x03) as u8),
-            auto_handoff_min_bemf: AutoHandoffBemf::from(((value >> 17) & 0x07) as u8),
-            brake_current_persist: BrakeCurrentPersist::from(((value >> 15) & 0x03) as u8),
-            mpet_ipd_current_limit: MpetIpdCurrentLimit::from(((value >> 13) & 0x03) as u8),
-            mpet_ipd_freq: MpetIpdCount::from(((value >> 11) & 0x03) as u8),
-            mpet_open_loop_current_ref: MpetOpenLoopCurrentRef::from(((value >> 8) & 0x07) as u8),
-            mpet_open_loop_speed_ref: MpetOpenLoopSpeedRef::from(((value >> 6) & 0x03) as u8),
-            mpet_open_loop_slew_rate: MpetOpenLoopSlewRate::from(((value >> 3) & 0x07) as u8),
-            rev_drv_open_loop_dec: ReverseOpenLoopDeceleration::from((value & 0x07) as u8),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum SpeedDeltaLimitExit {
     /// 2.5%
     #[strum(to_string = "2.5%")]
@@ -99,20 +73,8 @@ pub enum SpeedDeltaLimitExit {
     P10 = 0x3,
 }
 
-impl From<u8> for SpeedDeltaLimitExit {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => SpeedDeltaLimitExit::P2_5,
-            0x1 => SpeedDeltaLimitExit::P5,
-            0x2 => SpeedDeltaLimitExit::P7_5,
-            0x3 => SpeedDeltaLimitExit::P10,
-            _ => panic!("Invalid value for SpeedDeltaLimitExit"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum SpeedPinGlitchFilter {
     /// No Glitch Filter
     #[strum(to_string = "No Glitch Filter")]
@@ -128,20 +90,8 @@ pub enum SpeedPinGlitchFilter {
     Us1 = 0x3,
 }
 
-impl From<u8> for SpeedPinGlitchFilter {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => SpeedPinGlitchFilter::None,
-            0x1 => SpeedPinGlitchFilter::Us02,
-            0x2 => SpeedPinGlitchFilter::Us05,
-            0x3 => SpeedPinGlitchFilter::Us1,
-            _ => panic!("Invalid value for SpeedPinGlitchFilter"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum PersistanceTime {
     /// 1ms
     #[strum(to_string = "1ms")]
@@ -157,20 +107,8 @@ pub enum PersistanceTime {
     Ms100 = 0x3,
 }
 
-impl From<u8> for PersistanceTime {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => PersistanceTime::Ms1,
-            0x1 => PersistanceTime::Ms5,
-            0x2 => PersistanceTime::Ms50,
-            0x3 => PersistanceTime::Ms100,
-            _ => panic!("Invalid value for PersistanceTime"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum IsdTimeout {
     /// 500ms
     #[strum(to_string = "500ms")]
@@ -186,20 +124,8 @@ pub enum IsdTimeout {
     Ms2000 = 0x3,
 }
 
-impl From<u8> for IsdTimeout {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => IsdTimeout::Ms500,
-            0x1 => IsdTimeout::Ms750,
-            0x2 => IsdTimeout::Ms1000,
-            0x3 => IsdTimeout::Ms2000,
-            _ => panic!("Invalid value for IsdTimeout"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u3, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum AutoHandoffBemf {
     /// 0mV
     #[strum(to_string = "0mV")]
@@ -227,24 +153,8 @@ pub enum AutoHandoffBemf {
     Mv1500 = 0x7,
 }
 
-impl From<u8> for AutoHandoffBemf {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => AutoHandoffBemf::Mv0,
-            0x1 => AutoHandoffBemf::Mv50,
-            0x2 => AutoHandoffBemf::Mv100,
-            0x3 => AutoHandoffBemf::Mv250,
-            0x4 => AutoHandoffBemf::Mv500,
-            0x5 => AutoHandoffBemf::Mv1000,
-            0x6 => AutoHandoffBemf::Mv1250,
-            0x7 => AutoHandoffBemf::Mv1500,
-            _ => panic!("Invalid value for AutoHandoffBemf"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum BrakeCurrentPersist {
     /// 50ms
     #[strum(to_string = "50ms")]
@@ -260,20 +170,8 @@ pub enum BrakeCurrentPersist {
     Ms500 = 0x3,
 }
 
-impl From<u8> for BrakeCurrentPersist {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => BrakeCurrentPersist::Ms50,
-            0x1 => BrakeCurrentPersist::Ms100,
-            0x2 => BrakeCurrentPersist::Ms250,
-            0x3 => BrakeCurrentPersist::Ms500,
-            _ => panic!("Invalid value for BrakeCurrentPersist"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetIpdCurrentLimit {
     /// 0.1A
     #[strum(to_string = "0.1A")]
@@ -289,20 +187,8 @@ pub enum MpetIpdCurrentLimit {
     A2_0 = 0x3,
 }
 
-impl From<u8> for MpetIpdCurrentLimit {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => MpetIpdCurrentLimit::A0_1,
-            0x1 => MpetIpdCurrentLimit::A0_5,
-            0x2 => MpetIpdCurrentLimit::A1_0,
-            0x3 => MpetIpdCurrentLimit::A2_0,
-            _ => panic!("Invalid value for MpetIpdCurrentLimit"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetIpdCount {
     /// 1
     #[strum(to_string = "1")]
@@ -318,20 +204,8 @@ pub enum MpetIpdCount {
     C8 = 0x3,
 }
 
-impl From<u8> for MpetIpdCount {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => MpetIpdCount::C1,
-            0x1 => MpetIpdCount::C2,
-            0x2 => MpetIpdCount::C4,
-            0x3 => MpetIpdCount::C8,
-            _ => panic!("Invalid value for MpetIpdCount"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u3, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetOpenLoopCurrentRef {
     /// 1.0A
     #[strum(to_string = "1.0A")]
@@ -359,24 +233,8 @@ pub enum MpetOpenLoopCurrentRef {
     A8 = 0x7,
 }
 
-impl From<u8> for MpetOpenLoopCurrentRef {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => MpetOpenLoopCurrentRef::A1,
-            0x1 => MpetOpenLoopCurrentRef::A2,
-            0x2 => MpetOpenLoopCurrentRef::A3,
-            0x3 => MpetOpenLoopCurrentRef::A4,
-            0x4 => MpetOpenLoopCurrentRef::A5,
-            0x5 => MpetOpenLoopCurrentRef::A6,
-            0x6 => MpetOpenLoopCurrentRef::A7,
-            0x7 => MpetOpenLoopCurrentRef::A8,
-            _ => panic!("Invalid value for MpetOpenLoopCurrentRef"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u2, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetOpenLoopSpeedRef {
     /// 15% of MAX_SPEED
     #[strum(to_string = "15%")]
@@ -392,20 +250,8 @@ pub enum MpetOpenLoopSpeedRef {
     P50 = 0x3,
 }
 
-impl From<u8> for MpetOpenLoopSpeedRef {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => MpetOpenLoopSpeedRef::P15,
-            0x1 => MpetOpenLoopSpeedRef::P25,
-            0x2 => MpetOpenLoopSpeedRef::P35,
-            0x3 => MpetOpenLoopSpeedRef::P50,
-            _ => panic!("Invalid value for MpetOpenLoopSpeedRef"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u3, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetOpenLoopSlewRate {
     /// 0.1Hz/s
     #[strum(to_string = "0.1Hz/s")]
@@ -433,24 +279,8 @@ pub enum MpetOpenLoopSlewRate {
     Hz20_0 = 0x7,
 }
 
-impl From<u8> for MpetOpenLoopSlewRate {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => MpetOpenLoopSlewRate::Hz0_1,
-            0x1 => MpetOpenLoopSlewRate::Hz0_5,
-            0x2 => MpetOpenLoopSlewRate::Hz1_0,
-            0x3 => MpetOpenLoopSlewRate::Hz2_0,
-            0x4 => MpetOpenLoopSlewRate::Hz3_0,
-            0x5 => MpetOpenLoopSlewRate::Hz5_0,
-            0x6 => MpetOpenLoopSlewRate::Hz10_0,
-            0x7 => MpetOpenLoopSlewRate::Hz20_0,
-            _ => panic!("Invalid value for MpetOpenLoopSlewRate"),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
-#[repr(u8)]
+#[bitenum(u3, exhaustive = true)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ReverseOpenLoopDeceleration {
     /// 50%
     #[strum(to_string = "50%")]
@@ -476,20 +306,4 @@ pub enum ReverseOpenLoopDeceleration {
     /// 150%
     #[strum(to_string = "150%")]
     P150 = 0x7,
-}
-
-impl From<u8> for ReverseOpenLoopDeceleration {
-    fn from(value: u8) -> Self {
-        match value {
-            0x0 => ReverseOpenLoopDeceleration::P50,
-            0x1 => ReverseOpenLoopDeceleration::P60,
-            0x2 => ReverseOpenLoopDeceleration::P70,
-            0x3 => ReverseOpenLoopDeceleration::P80,
-            0x4 => ReverseOpenLoopDeceleration::P90,
-            0x5 => ReverseOpenLoopDeceleration::P100,
-            0x6 => ReverseOpenLoopDeceleration::P125,
-            0x7 => ReverseOpenLoopDeceleration::P150,
-            _ => panic!("Invalid value for ReverseOpenLoopDeceleration"),
-        }
-    }
 }
