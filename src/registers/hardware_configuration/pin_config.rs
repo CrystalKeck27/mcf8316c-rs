@@ -1,7 +1,7 @@
 use super::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct PinConfig {
     /// Vdc (VM) filter disable.
@@ -36,7 +36,11 @@ pub struct PinConfig {
 }
 
 impl Register for PinConfig {
-    const ADDRESS: u16 = PIN_CONFIG; // Example address, replace with actual address
+    const ADDRESS: u16 = PIN_CONFIG;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u2, exhaustive = true)]

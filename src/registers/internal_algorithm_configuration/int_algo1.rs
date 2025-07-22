@@ -1,7 +1,7 @@
 use super::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct IntAlgo1 {
     /// Difference between final speed and present speed below which
@@ -54,6 +54,10 @@ pub struct IntAlgo1 {
 
 impl Register for IntAlgo1 {
     const ADDRESS: u16 = INT_ALGO_1;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u2, exhaustive = true)]

@@ -2,7 +2,7 @@ use super::*;
 use bitbybit::*;
 
 /// Data model for the Initial Speed Detection (ISD) configuration register.
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct IsdConfig {
     /// ISD Enable.
@@ -58,7 +58,11 @@ pub struct IsdConfig {
 }
 
 impl Register for IsdConfig {
-    const ADDRESS: u16 = ISD_CONFIG; // Example address, replace with actual address
+    const ADDRESS: u16 = ISD_CONFIG;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u4, exhaustive = true)]

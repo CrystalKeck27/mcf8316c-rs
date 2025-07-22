@@ -2,7 +2,7 @@ use super::*;
 use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct ClosedLoop4 {
     /// 7 LSB for speed loop Kp.
@@ -19,5 +19,9 @@ pub struct ClosedLoop4 {
 }
 
 impl Register for ClosedLoop4 {
-    const ADDRESS: u16 = CLOSED_LOOP4; // Example address, replace with actual address
+    const ADDRESS: u16 = CLOSED_LOOP4;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }

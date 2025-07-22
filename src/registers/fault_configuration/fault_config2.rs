@@ -1,7 +1,7 @@
 use super::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct FaultConfig2 {
     /// Lock 1 (Abnormal Speed) Enable.
@@ -53,7 +53,11 @@ pub struct FaultConfig2 {
 }
 
 impl Register for FaultConfig2 {
-    const ADDRESS: u16 = FAULT_CONFIG2; // Example address, replace with actual address
+    const ADDRESS: u16 = FAULT_CONFIG2;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u3, exhaustive = true)]

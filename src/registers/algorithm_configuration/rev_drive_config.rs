@@ -2,7 +2,7 @@ pub use super::*;
 use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct RevDriveConfig {
     /// Open loop acceleration coefficient A1 during reverse drive
@@ -23,7 +23,11 @@ pub struct RevDriveConfig {
 }
 
 impl Register for RevDriveConfig {
-    const ADDRESS: u16 = REV_DRIVE_CONFIG; // Example address, replace with actual address
+    const ADDRESS: u16 = REV_DRIVE_CONFIG;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u3, exhaustive = true)]

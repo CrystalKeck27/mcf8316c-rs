@@ -1,7 +1,7 @@
 use super::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct IntAlgo2 {
     /// Close loop acceleration when estimator is not yet fully aligned just
@@ -37,6 +37,10 @@ pub struct IntAlgo2 {
 
 impl Register for IntAlgo2 {
     const ADDRESS: u16 = INT_ALGO_2;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u4, exhaustive = true)]

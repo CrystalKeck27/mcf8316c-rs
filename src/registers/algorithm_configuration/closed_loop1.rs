@@ -1,7 +1,7 @@
 use super::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(PartialEq, Eq)]
 pub struct ClosedLoop1 {
     /// Enable overmodulation.
@@ -58,7 +58,11 @@ pub struct ClosedLoop1 {
 }
 
 impl Register for ClosedLoop1 {
-    const ADDRESS: u16 = CLOSED_LOOP1; // Example address, replace with actual address
+    const ADDRESS: u16 = CLOSED_LOOP1;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]

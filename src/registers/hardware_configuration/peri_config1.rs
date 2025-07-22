@@ -1,7 +1,9 @@
 use super::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+pub const PERI_CONFIG1_RESET: u32 = 0b01000000_00000000_00000000_00000000;
+
+#[bitfield(u32, default = PERI_CONFIG1_RESET)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct PeriConfig1 {
     /// Spread Spectrum Modulation disable.
@@ -41,7 +43,11 @@ pub struct PeriConfig1 {
 }
 
 impl Register for PeriConfig1 {
-    const ADDRESS: u16 = PERI_CONFIG1; // Example address, replace with actual address
+    const ADDRESS: u16 = PERI_CONFIG1;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u2, exhaustive = true)]

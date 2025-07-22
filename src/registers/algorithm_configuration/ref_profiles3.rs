@@ -1,7 +1,7 @@
 use super::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct RefProfiles3 {
     /// 4 LSB for Duty Cycle E
@@ -22,7 +22,11 @@ pub struct RefProfiles3 {
 }
 
 impl Register for RefProfiles3 {
-    const ADDRESS: u16 = REF_PROFILES3; // Example address, replace with actual address
+    const ADDRESS: u16 = REF_PROFILES3;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u2, exhaustive = true)]

@@ -2,7 +2,7 @@ use super::*;
 use bitbybit::*;
 use arbitrary_int::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct MotorStartup1 {
     /// Mortor start-up method
@@ -55,7 +55,11 @@ pub struct MotorStartup1 {
 }
 
 impl Register for MotorStartup1 {
-    const ADDRESS: u16 = MOTOR_STARTUP1; // Example address, replace with actual address
+    const ADDRESS: u16 = MOTOR_STARTUP1;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u2, exhaustive = true)]

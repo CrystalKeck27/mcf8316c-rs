@@ -3,12 +3,12 @@ use bitbybit::*;
 
 pub const GD_CONFIG1_RESET: u32 = 0b_00010000_00100010_10000001_00000000;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = GD_CONFIG1_RESET)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct GdConfig1 {
     /// Parity bit
-    #[bit(31, rw)]
-    parity: bool,
+    // #[bit(31, rw)]
+    // parity: bool,
     /// Slew rate
     #[bits(26..=27, rw)]
     pub slew_rate: Option<SlewRate>,
@@ -44,7 +44,16 @@ pub struct GdConfig1 {
 }
 
 impl Register for GdConfig1 {
-    const ADDRESS: u16 = GD_CONFIG1; // Example address, replace with actual address
+    const ADDRESS: u16 = GD_CONFIG1;
+
+    fn value(&self) -> u32 {
+        let mut value = self.raw_value();
+        if value.count_ones() % 2 == 1 {
+            // If the parity bit is not set, we set it to 1
+            value |= 0x8000_0000; // Set the parity bit
+        }
+        value
+    }
 }
 
 #[bitenum(u2, exhaustive = false)]

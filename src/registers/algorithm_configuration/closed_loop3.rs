@@ -1,7 +1,7 @@
 use super::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct ClosedLoop3 {
     /// 8-bit values for motor BEMF Constant
@@ -19,7 +19,11 @@ pub struct ClosedLoop3 {
 }
 
 impl Register for ClosedLoop3 {
-    const ADDRESS: u16 = CLOSED_LOOP3; // Example address, replace with actual address
+    const ADDRESS: u16 = CLOSED_LOOP3;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u8, exhaustive = true)]

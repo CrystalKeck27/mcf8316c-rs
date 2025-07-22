@@ -2,7 +2,7 @@ use super::*;
 use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct DeviceConfig1 {
     /// Selects between DAC2 and SOx channels
@@ -29,7 +29,11 @@ pub struct DeviceConfig1 {
 }
 
 impl Register for DeviceConfig1 {
-    const ADDRESS: u16 = DEVICE_CONFIG1; // Example address, replace with actual address
+    const ADDRESS: u16 = DEVICE_CONFIG1;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u2, exhaustive = true)]

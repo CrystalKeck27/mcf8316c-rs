@@ -2,7 +2,7 @@ use super::*;
 use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32)]
+#[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct DeviceConfig2 {
     /// Input frequency on speed pin for frequency based motor control that
@@ -54,7 +54,11 @@ pub struct DeviceConfig2 {
 }
 
 impl Register for DeviceConfig2 {
-    const ADDRESS: u16 = DEVICE_CONFIG2; // Example address, replace with actual address
+    const ADDRESS: u16 = DEVICE_CONFIG2;
+
+    fn value(&self) -> u32 {
+        self.raw_value()
+    }
 }
 
 #[bitenum(u2, exhaustive = true)]
