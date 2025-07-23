@@ -1,9 +1,7 @@
 use embedded_hal::i2c::SevenBitAddress;
 use split_owned::SplitOwned;
 
-use crate::protocol::control_word::{DataLength, CRC_8_CCIT};
-
-use super::{super::registers::register::Register, control_word};
+use super::{super::registers::register::Register, control_word::*};
 
 pub struct MCF8316C<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> {
     pub i2c: I2C,
@@ -28,7 +26,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
 
     /// Creates a packet that would set the data at the specified address.
     pub fn create_write_u16_packet(&mut self, address: u16, data: u16) -> [u8; 6] {
-        let control_word = control_word::ControlWord::new(
+        let control_word = ControlWord::new(
             false,             // Write operation
             true,              // CRC enabled
             DataLength::Len16, // Data length
@@ -51,7 +49,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
 
     /// Creates a packet that would set the data at the specified address.
     pub fn create_write_u32_packet(&mut self, address: u16, data: u32) -> [u8; 8] {
-        let control_word = control_word::ControlWord::new(
+        let control_word = ControlWord::new(
             false,             // Write operation
             true,              // CRC enabled
             DataLength::Len32, // Data length
@@ -74,7 +72,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
 
     /// Creates a packet that would set the data at the specified address.
     pub fn create_write_u64_packet(&mut self, address: u16, data: u64) -> [u8; 12] {
-        let control_word = control_word::ControlWord::new(
+        let control_word = ControlWord::new(
             false,             // Write operation
             true,              // CRC enabled
             DataLength::Len64, // Data length
@@ -120,7 +118,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
 
     /// Reads data from the specified address.
     pub fn read_u16(&mut self, address: u16) -> Result<u16, I2C::Error> {
-        let control_word = control_word::ControlWord::new(
+        let control_word = ControlWord::new(
             true,              // Read operation
             true,              // CRC enabled
             DataLength::Len16, // Data length
@@ -154,7 +152,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
 
     /// Reads data from the specified address.
     pub fn read_u32(&mut self, address: u16) -> Result<u32, I2C::Error> {
-        let control_word = control_word::ControlWord::new(
+        let control_word = ControlWord::new(
             true,              // Read operation
             true,              // CRC enabled
             DataLength::Len32, // Data length
@@ -187,7 +185,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
 
     /// Reads data from the specified address.
     pub fn read_u64(&mut self, address: u16) -> Result<u64, I2C::Error> {
-        let control_word = control_word::ControlWord::new(
+        let control_word = ControlWord::new(
             true,              // Read operation
             true,              // CRC enabled
             DataLength::Len64, // Data length
@@ -199,7 +197,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
         self.i2c.write(self.address, &control_word)?;
         std::thread::sleep(core::time::Duration::from_millis(10)); // Wait for the device to respond (only needed in development)
         self.i2c.read(self.address, &mut data_and_crc)?;
-        
+
         let (data, crc) = data_and_crc.split_owned::<8, 1>();
         let crc = crc[0];
 
