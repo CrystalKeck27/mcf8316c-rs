@@ -1,4 +1,5 @@
 pub mod mcf8316c;
+pub mod protocol;
 pub mod registers;
 
 pub fn add(left: u64, right: u64) -> u64 {
