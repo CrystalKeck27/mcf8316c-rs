@@ -1,4 +1,5 @@
 use embedded_hal::i2c::SevenBitAddress;
+use split_owned::SplitOwned;
 
 use crate::protocol::control_word::{DataLength, CRC_8_CCIT};
 
@@ -126,29 +127,29 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
             address,
         );
         let control_word = control_word.to_bytes();
-        let mut data = [0u8; 3];
+        let mut data_and_crc = [0u8; 3];
         // self.i2c.write_read(self.address, &packet, &mut data)?;
         self.i2c.write(self.address, &control_word)?;
         std::thread::sleep(core::time::Duration::from_millis(10)); // Wait for the device to respond (only needed in development)
-        self.i2c.read(self.address, &mut data)?;
+        self.i2c.read(self.address, &mut data_and_crc)?;
+
+        let (data, crc) = data_and_crc.split_owned::<2, 1>();
+        let crc = crc[0];
 
         let first_byte_tx = self.address << 1;
         let first_byte_rx = first_byte_tx | 1;
 
-        let crc = crc::Crc::<u8>::new(&CRC_8_CCIT);
-        let mut digest = crc.digest();
+        let crc_calculator = crc::Crc::<u8>::new(&CRC_8_CCIT);
+        let mut digest = crc_calculator.digest();
         digest.update(&[first_byte_tx]);
         digest.update(&control_word);
         digest.update(&[first_byte_rx]);
         digest.update(&data[..2]);
-        if digest.finalize() != data[2] {
+        if digest.finalize() != crc {
             // return Err(embedded_hal::i2c::Error::Other("CRC mismatch"));
         }
 
-        // Safety: We always have enough data to fill the u32
-        Ok(u16::from_le_bytes(unsafe {
-            data[0..2].try_into().unwrap_unchecked()
-        }))
+        Ok(u16::from_le_bytes(data))
     }
 
     /// Reads data from the specified address.
@@ -160,29 +161,28 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
             address,
         );
         let control_word = control_word.to_bytes();
-        let mut data = [0u8; 5];
+        let mut data_and_crc = [0u8; 5];
         // self.i2c.write_read(self.address, &packet, &mut data)?;
         self.i2c.write(self.address, &control_word)?;
         std::thread::sleep(core::time::Duration::from_millis(10)); // Wait for the device to respond (only needed in development)
-        self.i2c.read(self.address, &mut data)?;
+        self.i2c.read(self.address, &mut data_and_crc)?;
+        let (data, crc) = data_and_crc.split_owned::<4, 1>();
+        let crc = crc[0];
 
         let first_byte_tx = self.address << 1;
         let first_byte_rx = first_byte_tx | 1;
 
-        let crc = crc::Crc::<u8>::new(&CRC_8_CCIT);
-        let mut digest = crc.digest();
+        let crc_calculator = crc::Crc::<u8>::new(&CRC_8_CCIT);
+        let mut digest = crc_calculator.digest();
         digest.update(&[first_byte_tx]);
         digest.update(&control_word);
         digest.update(&[first_byte_rx]);
-        digest.update(&data[..4]);
-        if digest.finalize() != data[4] {
+        digest.update(&data);
+        if digest.finalize() != crc {
             // return Err(embedded_hal::i2c::Error::Other("CRC mismatch"));
         }
 
-        // Safety: We always have enough data to fill the u32
-        Ok(u32::from_le_bytes(unsafe {
-            data[0..4].try_into().unwrap_unchecked()
-        }))
+        Ok(u32::from_le_bytes(data))
     }
 
     /// Reads data from the specified address.
@@ -194,29 +194,29 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
             address,
         );
         let control_word = control_word.to_bytes();
-        let mut data = [0u8; 9];
+        let mut data_and_crc = [0u8; 9];
         // self.i2c.write_read(self.address, &packet, &mut data)?;
         self.i2c.write(self.address, &control_word)?;
         std::thread::sleep(core::time::Duration::from_millis(10)); // Wait for the device to respond (only needed in development)
-        self.i2c.read(self.address, &mut data)?;
+        self.i2c.read(self.address, &mut data_and_crc)?;
+        
+        let (data, crc) = data_and_crc.split_owned::<8, 1>();
+        let crc = crc[0];
 
         let first_byte_tx = self.address << 1;
         let first_byte_rx = first_byte_tx | 1;
 
-        let crc = crc::Crc::<u8>::new(&CRC_8_CCIT);
-        let mut digest = crc.digest();
+        let crc_calculator = crc::Crc::<u8>::new(&CRC_8_CCIT);
+        let mut digest = crc_calculator.digest();
         digest.update(&[first_byte_tx]);
         digest.update(&control_word);
         digest.update(&[first_byte_rx]);
-        digest.update(&data[..8]);
-        if digest.finalize() != data[8] {
+        digest.update(&data);
+        if digest.finalize() != crc {
             // return Err(embedded_hal::i2c::Error::Other("CRC mismatch"));
         }
 
-        // Safety: We always have enough data to fill the u64
-        Ok(u64::from_le_bytes(unsafe {
-            data[0..8].try_into().unwrap_unchecked()
-        }))
+        Ok(u64::from_le_bytes(data))
     }
 
     pub fn read<T: Register + From<u32>>(&mut self) -> Result<T, I2C::Error> {
