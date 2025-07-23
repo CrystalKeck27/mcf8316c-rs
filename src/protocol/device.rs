@@ -114,8 +114,8 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     }
 
     /// Writes data to the specified register.
-    pub fn write<T: Register + Into<u32>>(&mut self, data: T) -> Result<(), I2C::Error> {
-        self.write_u32(T::ADDRESS, data.into())
+    pub fn write<T: Register>(&mut self, data: T) -> Result<(), I2C::Error> {
+        self.write_u32(T::ADDRESS, data.value())
     }
 
     /// Reads data from the specified address.
