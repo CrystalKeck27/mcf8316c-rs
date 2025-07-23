@@ -210,6 +210,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
         }
     }
 
+    /// Reads a register value.
     pub fn read<T: Register + From<u32>>(&mut self) -> Result<T, ReadError<I2C::Error>> {
         let value = self.read_u32(T::ADDRESS)?;
         Ok(T::from(value))
