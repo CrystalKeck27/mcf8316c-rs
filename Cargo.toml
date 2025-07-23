@@ -1,6 +1,19 @@
 [package]
-name = "mcf8316c-rs"
+name = "mcf8316c"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+arbitrary-int = "1.3.0"
+bitbybit = "1.3.3"
+crc = "3.3.0"
+embedded-hal = "1.0.0"
+split_owned = "0.1.1"
+strum = { version = "0.27.1", features = ["strum_macros", "derive"] }
+thiserror = { version = "2.0.12", default-features = false }
+
+[lints.clippy]
+undocumented_unsafe_blocks = "warn"
+missing_panics_doc = "warn"
+std_instead_of_core = "warn"
+fallible_impl_from = "warn"
