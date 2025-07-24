@@ -17,9 +17,3 @@ embedded-hal = "1.0.0"
 split_owned = "0.1.1"
 strum = { version = "0.27.1", features = ["strum_macros", "derive"] }
 thiserror = { version = "2.0.12", default-features = false }
-
-[lints.clippy]
-undocumented_unsafe_blocks = "warn"
-missing_panics_doc = "warn"
-std_instead_of_core = "warn"
-fallible_impl_from = "warn"
