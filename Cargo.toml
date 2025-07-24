@@ -3,6 +3,11 @@ name = "mcf8316c"
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/CrystalKeck27/mcf8316c-rs"
+readme = "README.md"
+description = "I2C driver for the TI MCF8316C BLDC motor driver"
+keywords = ["mcf8316c", "bldc", "motor-driver", "embedded", "embedded-hal-driver"]
+categories = ["embedded", "no-std", "no-std::no-alloc"]
 
 [dependencies]
 arbitrary-int = "1.3.0"
