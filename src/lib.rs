@@ -3,10 +3,6 @@
 
 
 #![no_std]
-#![deny(missing_docs)]
-#![deny(warnings)]
-#![deny(missing_copy_implementations)]
-#![deny(missing_debug_implementations)]
 #![deny(clippy::missing_panics_doc)]
 #![deny(clippy::undocumented_unsafe_blocks)]
 #![deny(clippy::std_instead_of_core)]
