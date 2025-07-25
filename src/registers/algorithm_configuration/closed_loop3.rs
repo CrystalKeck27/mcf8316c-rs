@@ -1,6 +1,10 @@
+//! Section 7.7.1.7
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Register to configure close loop settings3
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct ClosedLoop3 {
@@ -9,23 +13,25 @@ pub struct ClosedLoop3 {
     pub motor_bemf_const: MotorBemf,
     /// 10-bit value for current Iq and Id loop Kp. 0 = Auto
     #[bits(13..=22, rw)]
-    pub curr_loop_kp: KVal,
+    pub curr_loop_kp: CurrentKpVal,
     /// 10-bit value for current Iq and Id loop Ki. 0 = Auto
     #[bits(3..=12, rw)]
-    pub curr_loop_ki: KVal,
+    pub curr_loop_ki: CurrentKiVal,
     /// 3 MSB for speed loop Kp.
     #[bits(0..=2, rw)]
     pub spd_loop_kp: SpeedLoopKpHigh3,
 }
 
 impl Register for ClosedLoop3 {
-    const ADDRESS: u16 = CLOSED_LOOP3;
+    const ADDRESS: u12 = CLOSED_LOOP3;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
 }
 
+/// 8-bit values for motor BEMF Constant. See Table 7-4 for values of
+/// BEMF constant
 #[bitenum(u8, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MotorBemf {

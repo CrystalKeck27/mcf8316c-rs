@@ -1,6 +1,10 @@
+//! Section 7.7.2.1
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Register to configure fault settings1
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct FaultConfig1 {
@@ -40,13 +44,14 @@ pub struct FaultConfig1 {
 }
 
 impl Register for FaultConfig1 {
-    const ADDRESS: u16 = FAULT_CONFIG1;
+    const ADDRESS: u12 = FAULT_CONFIG1;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
 }
 
+/// Lock detection current limit deglitch time
 #[bitenum(u4, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum LockIlimitDeglitchTime {
@@ -94,6 +99,7 @@ pub enum LockIlimitDeglitchTime {
     Ms1000 = 0xF,
 }
 
+/// Lock detection retry time
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum LockRetryTime {

@@ -1,6 +1,12 @@
-//! I2C driver for the TI MCF8316C BLDC motor driver
+//! # I2C driver for the TI MCF8316C-Q1 BLDC motor driver
 //!
-
+//! This library is heavily based on the official MCF8316C-Q1 datasheet provided by Texas Instruments.
+//! The current version of the datasheet is the August 2023 version and it can be found at:
+//! [MCF8316C-Q1 Datasheet](https://www.ti.com/lit/pdf/SLLSFV2).
+//! 
+//! ## Warning
+//! This chip uses I2C clock stretching. Make sure that your I2C implementation supports clock stretching.
+//! 
 
 #![no_std]
 #![deny(missing_docs)]
@@ -15,4 +21,4 @@
 pub mod protocol;
 pub mod registers;
 
-pub use protocol::device::MCF8316C;
+pub use protocol::MCF8316C;

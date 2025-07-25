@@ -1,5 +1,8 @@
+//! Common enums used across various registers
+
 use bitbybit::bitenum;
 
+/// Current selection used in various registers
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum CurrentSelection {
@@ -53,6 +56,7 @@ pub enum CurrentSelection {
     A8_0 = 0xF,
 }
 
+/// Acceleration coefficient A1 options for open loop control
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum OpenLoopAccelerationA1 {
@@ -106,6 +110,7 @@ pub enum OpenLoopAccelerationA1 {
     A10000 = 0xF,
 }
 
+/// Acceleration coefficient A2 options for open loop control
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum OpenLoopAccelerationA2 {

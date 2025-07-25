@@ -1,6 +1,10 @@
+//! Section 7.7.4.2
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Register to configure internal algorithm parameters2
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct IntAlgo2 {
@@ -36,13 +40,15 @@ pub struct IntAlgo2 {
 }
 
 impl Register for IntAlgo2 {
-    const ADDRESS: u16 = INT_ALGO_2;
+    const ADDRESS: u12 = INT_ALGO_2;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
 }
 
+/// Close loop acceleration when estimator is not yet fully aligned just
+/// after transition to closed loop
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum SlowClosedLoopAcceleration {
@@ -96,6 +102,7 @@ pub enum SlowClosedLoopAcceleration {
     Hz2000 = 0xF,
 }
 
+/// Bus current slew rate during active braking
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ActiveBrakeBusCurrentSlewRate {

@@ -1,6 +1,10 @@
+//! Section 7.7.1.11
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Register to configure reference profile3
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct RefProfiles3 {
@@ -22,13 +26,14 @@ pub struct RefProfiles3 {
 }
 
 impl Register for RefProfiles3 {
-    const ADDRESS: u16 = REF_PROFILES3;
+    const ADDRESS: u12 = REF_PROFILES3;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
 }
 
+/// Duty hysteresis
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum DutyHysteresis {

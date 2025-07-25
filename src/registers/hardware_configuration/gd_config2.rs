@@ -1,8 +1,13 @@
+//! Section 7.7.3.6
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Reset value for GD_CONFIG2 register
 pub const GD_CONFIG2_RESET: u32 = 0b_00000001_01000000_00000000_00000000;
 
+/// Register to configure gated driver settings2
 #[bitfield(u32, default = GD_CONFIG2_RESET)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct GdConfig2 {
@@ -11,10 +16,10 @@ pub struct GdConfig2 {
     /// Buck power sequencing disable.
     /// 0 = Buck power sequencing is enabled,
     /// 1 = Buck power sequencing is disabled
-    /// 
+    ///
     /// # This bit is write 1 to clear
     /// The value sent over the i2c bus is inverted from whatever is set here.
-    /// This should make its behavior consistent with the other registers 
+    /// This should make its behavior consistent with the other registers
     /// with the notable exception that you cannot set the value to 1.
     #[bit(24, rw)]
     pub buck_ps_dis: bool,
@@ -32,8 +37,8 @@ pub struct GdConfig2 {
 }
 
 impl Register for GdConfig2 {
-    const ADDRESS: u16 = GD_CONFIG2;
-    
+    const ADDRESS: u12 = GD_CONFIG2;
+
     fn value(&self) -> u32 {
         let mut value = self.raw_value();
         // calculate parity before flipping the buck_ps_dis bit
@@ -46,6 +51,7 @@ impl Register for GdConfig2 {
     }
 }
 
+/// Buck voltage
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum BuckVoltage {
@@ -76,6 +82,7 @@ impl Ord for BuckVoltage {
 }
 
 impl BuckVoltage {
+    /// Convert the enum variant to its corresponding voltage value.
     pub fn to_voltage(self) -> f32 {
         match self {
             BuckVoltage::V3_3 => 3.3,
@@ -86,6 +93,7 @@ impl BuckVoltage {
     }
 }
 
+/// Minimum ON time for low side MOSFET
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MinOnTime {

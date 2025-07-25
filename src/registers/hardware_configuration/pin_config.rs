@@ -1,6 +1,10 @@
+//! Section 7.7.3.1
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Register to configure hardware pins
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct PinConfig {
@@ -36,13 +40,14 @@ pub struct PinConfig {
 }
 
 impl Register for PinConfig {
-    const ADDRESS: u16 = PIN_CONFIG;
+    const ADDRESS: u12 = PIN_CONFIG;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
 }
 
+/// FG configuration during stop
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum FgIdleConfig {
@@ -60,6 +65,7 @@ pub enum FgIdleConfig {
     FgHigh2 = 0x3,
 }
 
+/// FG configuration during fault
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum FgFaultConfig {
@@ -77,6 +83,7 @@ pub enum FgFaultConfig {
     FgConfig = 0x3,
 }
 
+/// Brake pin override
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum BrakeInput {
@@ -94,6 +101,7 @@ pub enum BrakeInput {
     Pin2 = 0x3,
 }
 
+/// Configure motor control input source
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum SpeedMode {

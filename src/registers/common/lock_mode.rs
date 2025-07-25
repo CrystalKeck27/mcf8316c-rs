@@ -1,6 +1,9 @@
 use arbitrary_int::*;
 use bitbybit::bitenum;
 
+/// Lock mode configuration for the gate driver as an enum.
+/// Contains many duplicates, and is thus not very developer-friendly.
+/// Convert to `LockMode` for a more user-friendly interface.
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, strum::Display)]
 pub enum LockModeRaw {
@@ -64,20 +67,33 @@ impl PartialEq for LockModeRaw {
 
 impl Eq for LockModeRaw {}
 
+/// User-friendly enum for lock mode configuration.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LockMode {
+    /// Enable lock detection with optional auto-retry and driver mode
+    /// Represents `LockModeRaw` variants 0-7.
     Enable {
+        /// Whether to automatically retry lock detection
         auto_retry: bool,
+        /// Driver lock mode
         driver_mode: LockIlimitDriverMode,
     },
+    /// Report lock detection without action
+    /// Represents `LockModeRaw::Report`.
     Report,
+    /// Disable lock detection
+    /// Represents `LockModeRaw::Disable`.
     Disable,
 }
 
+/// Driver modes for lock detection
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LockIlimitDriverMode {
+    /// Tristate mode
     Tristate,
+    /// High-side brake mode (all high side FETs ON)
     HighSideBrake,
+    /// Low-side brake mode (all low side FETs ON)
     LowSideBrake,
 }
 

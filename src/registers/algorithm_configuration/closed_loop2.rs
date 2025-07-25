@@ -1,6 +1,10 @@
+//! Section 7.7.1.6
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Register to configure close loop settings2
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct ClosedLoop2 {
@@ -26,13 +30,14 @@ pub struct ClosedLoop2 {
 }
 
 impl Register for ClosedLoop2 {
-    const ADDRESS: u16 = CLOSED_LOOP2;
+    const ADDRESS: u12 = CLOSED_LOOP2;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
 }
 
+/// Motor stop options
 #[bitenum(u3, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MotorStop {
@@ -55,6 +60,7 @@ pub enum MotorStop {
     // Not Defined
 }
 
+/// Brake time during motor stop
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, strum::Display)]
 pub enum MotorStopBrakeTime {
@@ -136,6 +142,7 @@ impl Ord for MotorStopBrakeTime {
     }
 }
 
+/// A set of percentages in decreasing order.
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum PercentDecreasing {
@@ -204,6 +211,8 @@ impl Ord for PercentDecreasing {
     }
 }
 
+/// 8-bit values for motor phase inductance. See Table 7-2 for values of
+/// phase resistance
 #[bitenum(u8, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MotorResistance {
@@ -994,6 +1003,8 @@ impl PartialOrd for MotorResistance {
     }
 }
 
+/// 8-bit values for motor phase inductance. See Table 7-3 for values of
+/// phase inductance
 #[bitenum(u8, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MotorInductance {

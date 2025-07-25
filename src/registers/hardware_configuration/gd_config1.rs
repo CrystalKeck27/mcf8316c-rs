@@ -1,8 +1,13 @@
+//! Section 7.7.3.5
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Reset value for GD_CONFIG1 register
 pub const GD_CONFIG1_RESET: u32 = 0b_00010000_00100010_10000001_00000000;
 
+/// Register to configure gated driver settings1
 #[bitfield(u32, default = GD_CONFIG1_RESET)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct GdConfig1 {
@@ -44,7 +49,7 @@ pub struct GdConfig1 {
 }
 
 impl Register for GdConfig1 {
-    const ADDRESS: u16 = GD_CONFIG1;
+    const ADDRESS: u12 = GD_CONFIG1;
 
     fn value(&self) -> u32 {
         let mut value = self.raw_value();
@@ -56,6 +61,7 @@ impl Register for GdConfig1 {
     }
 }
 
+/// Slew rate
 #[bitenum(u2, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum SlewRate {
@@ -67,6 +73,7 @@ pub enum SlewRate {
     V200 = 0x3,
 }
 
+/// OCP Deglitch Time Settings
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum OvercurrentDeglitch {
@@ -84,6 +91,7 @@ pub enum OvercurrentDeglitch {
     U1_6 = 0x3,
 }
 
+/// OCP Fault Mode
 #[bitenum(u2, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 #[repr(u8)]
@@ -96,6 +104,8 @@ pub enum OvercurrentMode {
     Retry = 0x1,
 }
 
+/// Current Sense Amplifier gain (used only if
+/// DYNAMIC_CSA_GAIN_EN = 0b)
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum CurrentSenseAmplifierGain {

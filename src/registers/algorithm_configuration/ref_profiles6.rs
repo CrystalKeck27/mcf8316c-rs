@@ -1,6 +1,10 @@
+//! Section 7.7.1.14
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::bitfield;
 
+/// Register to configure reference profile6
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct RefProfiles6 {
@@ -13,7 +17,7 @@ pub struct RefProfiles6 {
 }
 
 impl Register for RefProfiles6 {
-    const ADDRESS: u16 = REF_PROFILES6;
+    const ADDRESS: u12 = REF_PROFILES6;
 
     fn value(&self) -> u32 {
         self.raw_value()

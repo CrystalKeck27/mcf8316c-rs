@@ -1,6 +1,10 @@
+//! Section 7.7.4.1
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Register to configure internal algorithm parameters1
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct IntAlgo1 {
@@ -53,13 +57,15 @@ pub struct IntAlgo1 {
 }
 
 impl Register for IntAlgo1 {
-    const ADDRESS: u16 = INT_ALGO_1;
+    const ADDRESS: u12 = INT_ALGO_1;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
 }
 
+/// Difference between final speed and present speed below which
+/// active braking will be stopped
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum SpeedDeltaLimitExit {
@@ -77,6 +83,7 @@ pub enum SpeedDeltaLimitExit {
     P10 = 0x3,
 }
 
+/// Glitch filter applied on speed pin input
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum SpeedPinGlitchFilter {
@@ -94,6 +101,7 @@ pub enum SpeedPinGlitchFilter {
     Us1 = 0x3,
 }
 
+/// Persistence time
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum PersistanceTime {
@@ -111,6 +119,7 @@ pub enum PersistanceTime {
     Ms100 = 0x3,
 }
 
+/// Timeout in case ISD is unable to reliably detect speed or direction
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum IsdTimeout {
@@ -128,6 +137,7 @@ pub enum IsdTimeout {
     Ms2000 = 0x3,
 }
 
+/// Minimum BEMF for handoff
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum AutoHandoffBemf {
@@ -157,6 +167,8 @@ pub enum AutoHandoffBemf {
     Mv1500 = 0x7,
 }
 
+/// Persistence time for current below threshold during current based
+/// ISD brake
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum BrakeCurrentPersist {
@@ -174,6 +186,7 @@ pub enum BrakeCurrentPersist {
     Ms500 = 0x3,
 }
 
+/// IPD current limit for MPET
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetIpdCurrentLimit {
@@ -191,6 +204,7 @@ pub enum MpetIpdCurrentLimit {
     A2_0 = 0x3,
 }
 
+/// Number of times IPD is executed for MPET
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetIpdCount {
@@ -208,6 +222,7 @@ pub enum MpetIpdCount {
     C8 = 0x3,
 }
 
+/// Open loop current reference for MPET
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetOpenLoopCurrentRef {
@@ -237,6 +252,7 @@ pub enum MpetOpenLoopCurrentRef {
     A8 = 0x7,
 }
 
+/// Open loop speed reference for MPET (% of MAX_SPEED)
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetOpenLoopSpeedRef {
@@ -254,6 +270,7 @@ pub enum MpetOpenLoopSpeedRef {
     P50 = 0x3,
 }
 
+/// Open loop acceleration for MPET
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MpetOpenLoopSlewRate {
@@ -283,6 +300,8 @@ pub enum MpetOpenLoopSlewRate {
     Hz20_0 = 0x7,
 }
 
+/// % of open loop acceleration to be applied during open loop
+/// deceleration in reverse drive
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ReverseOpenLoopDeceleration {

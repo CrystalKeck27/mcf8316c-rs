@@ -1,7 +1,10 @@
+//! Section 7.7.1.2
+
 pub use super::*;
 use arbitrary_int::*;
 use bitbybit::*;
 
+/// Register to configure reverse drive settings
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct RevDriveConfig {
@@ -23,13 +26,14 @@ pub struct RevDriveConfig {
 }
 
 impl Register for RevDriveConfig {
-    const ADDRESS: u16 = REV_DRIVE_CONFIG;
+    const ADDRESS: u12 = REV_DRIVE_CONFIG;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
 }
 
+/// Bus current limit during active braking
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ActiveBrakeCurrentLimit {

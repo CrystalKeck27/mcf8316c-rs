@@ -1,7 +1,10 @@
-use super::*;
-use bitbybit::*;
-use arbitrary_int::*;
+//! Section 7.7.1.3
 
+use super::*;
+use arbitrary_int::*;
+use bitbybit::*;
+
+/// Register to configure motor startup settings1
 #[bitfield(u32, default = 0x0)]
 #[derive(Debug, PartialEq, Eq)]
 pub struct MotorStartup1 {
@@ -55,13 +58,14 @@ pub struct MotorStartup1 {
 }
 
 impl Register for MotorStartup1 {
-    const ADDRESS: u16 = MOTOR_STARTUP1;
+    const ADDRESS: u12 = MOTOR_STARTUP1;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
 }
 
+/// Motor start-up method
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum StartupMode {
@@ -79,6 +83,7 @@ pub enum StartupMode {
     SlowFirstCycle = 0x3,
 }
 
+/// Align, slow first cycle and open loop current ramp rate
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum CurrentRampRate {
@@ -132,6 +137,7 @@ pub enum CurrentRampRate {
     NoLimit = 0xF,
 }
 
+/// Align time
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum AlignTime {
@@ -185,6 +191,7 @@ pub enum AlignTime {
     S10 = 0xF,
 }
 
+/// IPD Clock Frequency
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum IpdClockFreq {
@@ -214,6 +221,7 @@ pub enum IpdClockFreq {
     Hz10000 = 0x7,
 }
 
+/// Initial Position Detection (IPD) Current Threshold
 #[bitenum(u5, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum IpdCurrentThreshold {
@@ -274,6 +282,7 @@ pub enum IpdCurrentThreshold {
     // 5-bit field, I know. The rest is N/A. See table 7-18 of the datasheet.
 }
 
+/// Initial Position Detection (IPD) Advance Angle
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum IpdAdvanceAngle {
