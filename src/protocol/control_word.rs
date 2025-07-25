@@ -2,7 +2,8 @@ use arbitrary_int::*;
 use bitbybit::*;
 
 /// CRC algorithm used by the MCF8316C-Q1.
-/// See section 7.6.2.6 of the MCF8316C-Q1 datasheet.
+/// 
+/// Section 7.6.2.6
 pub const CRC_8_CCIT: crc::Algorithm<u8> = crc::Algorithm {
     width: 8,
     poly: 7,
@@ -14,13 +15,16 @@ pub const CRC_8_CCIT: crc::Algorithm<u8> = crc::Algorithm {
     residue: 172,
 };
 
-// 24-bit control word format
-// | OP_R/W | CRC_EN |   DLEN    |  MEM_SEC  | MEM_PAGE  | MEM_ADDR |
-// |--------|--------|-----------|-----------|-----------|----------|
-// |  CW23  |  CW22  | CW21-CW20 | CW19-CW16 | CW15-CW12 | CW11-CW0 |
-
 /// Represents a control word for the MCF8316C-Q1 I2C communication.
 /// The word is either followed by a read operation or a data word and crc.
+/// 
+/// 24-bit control word format
+/// | OP_R/W | CRC_EN |   DLEN    |  MEM_SEC  | MEM_PAGE  | MEM_ADDR |
+/// |--------|--------|-----------|-----------|-----------|----------|
+/// |  CW23  |  CW22  | CW21-CW20 | CW19-CW16 | CW15-CW12 | CW11-CW0 |
+///
+/// Section 7.6.2.1
+/// 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ControlWord {
     /// # Read/Write
@@ -96,7 +100,10 @@ impl ControlWord {
 }
 
 /// Enum representation of the data length field in the control word.
-/// See Table 7-10 of the MCF8316C-Q1 datasheet for more details.
+///
+/// Section 7.6.2.1
+/// 
+/// Data taken directly from Table 7-10
 #[bitenum(u2, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq)]
 pub enum DataLength {

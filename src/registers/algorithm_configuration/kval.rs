@@ -4,12 +4,16 @@ use arbitrary_int::*;
 use bitbybit::*;
 
 /// Kp for the current loop.
+/// Multiplier is 1.
 pub type CurrentKpVal = KVal<CurrentKp>;
 /// Ki for the current loop.
+/// Multiplier is 1000.
 pub type CurrentKiVal = KVal<CurrentKi>;
 /// Kp for the speed loop.
+/// Multiplier is 0.01.
 pub type SpeedKpVal = KVal<SpeedKp>;
 /// Ki for the speed loop.
+/// Multiplier is 0.1.
 pub type SpeedKiVal = KVal<SpeedKi>;
 
 /// 10-bit value for PI loop. K_x = Multiplier (constant per field) * value / 10^scale
@@ -71,15 +75,19 @@ impl<T: KValMultiplier> KVal<T> {
 }
 
 /// Unit struct for the constant multiplier of the Kp for the current loop.
+/// Multiplier is 1.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CurrentKp;
 /// Unit struct for the constant multiplier of the Ki for the current loop.
+/// Multiplier is 1000.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CurrentKi;
 /// Unit struct for the constant multiplier of the Kp for the speed loop.
+/// Multiplier is 0.01.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SpeedKp;
 /// Unit struct for the constant multiplier of the Ki for the speed loop.
+/// Multiplier is 0.1.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SpeedKi;
 
