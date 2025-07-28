@@ -5,15 +5,21 @@ edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/CrystalKeck27/mcf8316c-rs"
 readme = "README.md"
-description = "I2C driver for the TI MCF8316C BLDC motor driver"
+description = "I2C driver for the TI MCF8316C-Q1 BLDC motor driver"
 keywords = ["mcf8316c", "bldc", "motor-driver", "embedded", "embedded-hal-driver"]
 categories = ["embedded", "no-std", "no-std::no-alloc"]
 
 [dependencies]
 arbitrary-int = "1.3.0"
-bitbybit = "1.3.3"
+bitbybit = { git = "https://github.com/danlehmann/bitfield", rev = "d13c03d" }
 crc = "3.3.0"
 embedded-hal = "1.0.0"
 split_owned = "0.1.1"
 strum = { version = "0.27.1", features = ["strum_macros", "derive"] }
 thiserror = { version = "2.0.12", default-features = false }
+
+[dev-dependencies]
+mcp2221-hal = "0.1.0"
+
+[[example]]
+name = "mcp2221"

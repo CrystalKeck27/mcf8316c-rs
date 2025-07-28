@@ -1,16 +1,30 @@
 use arbitrary_int::*;
+use bitbybit::*;
 
 /// CRC algorithm used by the MCF8316C-Q1.
-/// See section 7.6.2.6 of the MCF8316C-Q1 datasheet.
-pub const CRC_8_CCIT: crc::Algorithm<u8> = crc::Algorithm { width: 8, poly: 7, init: 255, refin: false, refout: false, xorout: 0, check: 161, residue: 172 };
-
-// 24-bit control word format
-// | OP_R/W | CRC_EN |   DLEN    |  MEM_SEC  | MEM_PAGE  | MEM_ADDR |
-// |--------|--------|-----------|-----------|-----------|----------|
-// |  CW23  |  CW22  | CW21-CW20 | CW19-CW16 | CW15-CW12 | CW11-CW0 |
+/// 
+/// Section 7.6.2.6
+pub const CRC_8_CCIT: crc::Algorithm<u8> = crc::Algorithm {
+    width: 8,
+    poly: 7,
+    init: 255,
+    refin: false,
+    refout: false,
+    xorout: 0,
+    check: 161,
+    residue: 172,
+};
 
 /// Represents a control word for the MCF8316C-Q1 I2C communication.
 /// The word is either followed by a read operation or a data word and crc.
+/// 
+/// 24-bit control word format
+/// | OP_R/W | CRC_EN |   DLEN    |  MEM_SEC  | MEM_PAGE  | MEM_ADDR |
+/// |--------|--------|-----------|-----------|-----------|----------|
+/// |  CW23  |  CW22  | CW21-CW20 | CW19-CW16 | CW15-CW12 | CW11-CW0 |
+///
+/// Section 7.6.2.1
+/// 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ControlWord {
     /// # Read/Write
@@ -22,7 +36,7 @@ pub struct ControlWord {
     /// # Cyclic Redundancy Check(CRC) Enable
     /// MCF8316C-Q1 supports CRC to verify the data integrity.
     /// This bit controls whether the CRC feature is enabled or not.
-    /// 
+    ///
     /// ## WARNING
     /// MCF8316C-Q1 will compute CRC using the same polynomial internally and if there is a mismatch, the write request is **discarded**.
     /// **No Error is returned**.
@@ -52,14 +66,14 @@ pub struct ControlWord {
 
 impl ControlWord {
     /// Creates a new control word with the specified parameters.
-    pub fn new(is_read: bool, crc_en: bool, dlen: DataLength, mem_addr: u16) -> Self {
+    pub fn new(is_read: bool, crc_en: bool, dlen: DataLength, mem_addr: u12) -> Self {
         ControlWord {
             op_rw: is_read,
             crc_en,
             dlen,
-            mem_sec: u4::new(255),
+            mem_sec: u4::new(0),
             mem_page: u4::new(0),
-            mem_addr: u12::new(mem_addr),
+            mem_addr,
         }
     }
 
@@ -79,20 +93,25 @@ impl ControlWord {
             | ((self.crc_en as u8) << 6)
             | ((self.dlen as u8) << 4)
             | (self.mem_sec.as_u8() & 0x0F);
-        bytes[1] = ((self.mem_page.as_u8() & 0x0F) << 4) | ((self.mem_addr.as_u16() >> 8) & 0x0F) as u8;
+        bytes[1] =
+            ((self.mem_page.as_u8() & 0x0F) << 4) | ((self.mem_addr.as_u16() >> 8) & 0x0F) as u8;
         bytes[2] = (self.mem_addr.as_u16() & 0xFF) as u8;
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(u8)]
+/// Enum representation of the data length field in the control word.
+///
+/// Section 7.6.2.1
+/// 
+/// Data taken directly from Table 7-10
+#[bitenum(u2, exhaustive = false)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum DataLength {
-    Len16 = DLEN_16,
-    Len32 = DLEN_32,
-    Len64 = DLEN_64,
+    /// Two-byte data length.
+    Len16 = 0b00,
+    /// Four-byte data length.
+    /// All the registers in the MCF8316C-Q1 are 32-bit.
+    Len32 = 0b01,
+    /// Eight-byte data length.
+    Len64 = 0b10,
 }
-
-pub const DLEN_16: u8 = 0b00;
-pub const DLEN_32: u8 = 0b01;
-pub const DLEN_64: u8 = 0b10;
-pub const DLEN_RESERVED: u8 = 0b11;

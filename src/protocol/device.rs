@@ -1,16 +1,21 @@
 use embedded_hal::i2c::SevenBitAddress;
 use split_owned::SplitOwned;
 use thiserror::Error;
+use arbitrary_int::u12;
 
-use super::{super::registers::register::Register, control_word::*};
+use super::{super::registers::Register, control_word::*};
 
+/// MCF8316C-Q1 driver.
+#[derive(Debug)]
 pub struct MCF8316C<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> {
+    /// I2C Driver implementation field
     pub i2c: I2C,
+    /// 7-bit address of the MCF8316C-Q1 device
     pub address: SevenBitAddress,
 }
 
 impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
-    /// Creates a new instance of the MCF8316C driver.
+    /// Creates a new instance of the MCF8316C-Q1 driver with the address set to 0x00.
     pub fn new(i2c: I2C) -> Self {
         MCF8316C {
             i2c,
@@ -18,6 +23,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
         }
     }
 
+    /// Creates a new instance of the MCF8316C-Q1 driver with the specified I2C address.
     pub fn with_i2c_address(i2c: I2C, address: u8) -> Self {
         MCF8316C {
             i2c,
@@ -26,7 +32,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     }
 
     /// Creates a packet that would set the data at the specified address.
-    pub fn create_write_u16_packet(&mut self, address: u16, data: u16) -> [u8; 6] {
+    pub fn create_write_u16_packet(&mut self, address: u12, data: u16) -> [u8; 6] {
         let control_word = ControlWord::new(
             false,             // Write operation
             true,              // CRC enabled
@@ -49,7 +55,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     }
 
     /// Creates a packet that would set the data at the specified address.
-    pub fn create_write_u32_packet(&mut self, address: u16, data: u32) -> [u8; 8] {
+    pub fn create_write_u32_packet(&mut self, address: u12, data: u32) -> [u8; 8] {
         let control_word = ControlWord::new(
             false,             // Write operation
             true,              // CRC enabled
@@ -72,7 +78,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     }
 
     /// Creates a packet that would set the data at the specified address.
-    pub fn create_write_u64_packet(&mut self, address: u16, data: u64) -> [u8; 12] {
+    pub fn create_write_u64_packet(&mut self, address: u12, data: u64) -> [u8; 12] {
         let control_word = ControlWord::new(
             false,             // Write operation
             true,              // CRC enabled
@@ -95,30 +101,30 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     }
 
     /// Writes data to the specified address.
-    pub fn write_u16(&mut self, address: u16, data: u16) -> Result<(), I2C::Error> {
+    pub fn write_u16(&mut self, address: u12, data: u16) -> Result<(), I2C::Error> {
         let packet = self.create_write_u16_packet(address, data);
         self.i2c.write(self.address, &packet)
     }
 
     /// Writes data to the specified address.
-    pub fn write_u32(&mut self, address: u16, data: u32) -> Result<(), I2C::Error> {
+    pub fn write_u32(&mut self, address: u12, data: u32) -> Result<(), I2C::Error> {
         let packet = self.create_write_u32_packet(address, data);
         self.i2c.write(self.address, &packet)
     }
 
     /// Writes data to the specified address.
-    pub fn write_u64(&mut self, address: u16, data: u64) -> Result<(), I2C::Error> {
+    pub fn write_u64(&mut self, address: u12, data: u64) -> Result<(), I2C::Error> {
         let packet = self.create_write_u64_packet(address, data);
         self.i2c.write(self.address, &packet)
     }
 
     /// Writes data to the specified register.
-    pub fn write<T: Register>(&mut self, data: T) -> Result<(), I2C::Error> {
+    pub fn write<T: Register>(&mut self, data: &T) -> Result<(), I2C::Error> {
         self.write_u32(T::ADDRESS, data.value())
     }
 
     /// Reads data from the specified address.
-    pub fn read_u16(&mut self, address: u16) -> Result<u16, ReadError<I2C::Error>> {
+    pub fn read_u16(&mut self, address: u12) -> Result<u16, ReadError<I2C::Error>> {
         let control_word = ControlWord::new(
             true,              // Read operation
             true,              // CRC enabled
@@ -149,7 +155,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     }
 
     /// Reads data from the specified address.
-    pub fn read_u32(&mut self, address: u16) -> Result<u32, ReadError<I2C::Error>> {
+    pub fn read_u32(&mut self, address: u12) -> Result<u32, ReadError<I2C::Error>> {
         let control_word = ControlWord::new(
             true,              // Read operation
             true,              // CRC enabled
@@ -180,7 +186,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     }
 
     /// Reads data from the specified address.
-    pub fn read_u64(&mut self, address: u16) -> Result<u64, ReadError<I2C::Error>> {
+    pub fn read_u64(&mut self, address: u12) -> Result<u64, ReadError<I2C::Error>> {
         let control_word = ControlWord::new(
             true,              // Read operation
             true,              // CRC enabled
@@ -211,16 +217,22 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     }
 
     /// Reads a register value.
-    pub fn read<T: Register + From<u32>>(&mut self) -> Result<T, ReadError<I2C::Error>> {
+    pub fn read<T: Register>(&mut self) -> Result<T, ReadError<I2C::Error>> {
         let value = self.read_u32(T::ADDRESS)?;
-        Ok(T::from(value))
+        Ok(T::from_value(value))
     }
 }
 
+/// Error type for reading from the MCF8316C-Q1 device.
 #[derive(Error, Debug)]
 pub enum ReadError<T> {
+    /// I2C communication error.
+    /// If you are getting a lot of these (especially no-acks), you might want to verify that your
+    /// I2C implementation supports clock stretching and that it is enabled.
     #[error("I2C error: {0}")]
     I2CError(#[from] T),
+    /// CRC Mismatch.
+    /// Data was likely corrupted in transit. Consider retrying the transaction.
     #[error("CRC mismatch")]
     CRCMismatch,
 }

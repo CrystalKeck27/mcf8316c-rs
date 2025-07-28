@@ -1,8 +1,12 @@
+//! Section 7.7.2.2
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+/// Register to configure fault settings2
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct FaultConfig2 {
     /// Lock 1 (Abnormal Speed) Enable.
     /// 0 = Disable, 1 = Enable
@@ -53,13 +57,18 @@ pub struct FaultConfig2 {
 }
 
 impl Register for FaultConfig2 {
-    const ADDRESS: u16 = FAULT_CONFIG2;
+    const ADDRESS: u12 = FAULT_CONFIG2;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
+/// Abnormal speed lock threshold (% of MAX_SPEED)
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum AbnormalSpeedLockThreshold {
@@ -89,6 +98,7 @@ pub enum AbnormalSpeedLockThreshold {
     P200 = 0x7,
 }
 
+/// Abnormal BEMF lock threshold (% of expected BEMF)
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum AbnormalBemfThreshold {
@@ -118,6 +128,7 @@ pub enum AbnormalBemfThreshold {
     P70 = 0x7,
 }
 
+/// No motor lock threshold
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum NoMotorThreshold {
@@ -147,6 +158,7 @@ pub enum NoMotorThreshold {
     P1_0 = 0x7,
 }
 
+/// Hardware lock detection current limit deglitch time
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum LockIlimitDeglitchTime {
@@ -176,6 +188,7 @@ pub enum LockIlimitDeglitchTime {
     Us7 = 0x7,
 }
 
+/// Minimum DC Bus voltage for running motor
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum MinimumBusVoltage {
@@ -205,6 +218,7 @@ pub enum MinimumBusVoltage {
     V12_5 = 0x7,
 }
 
+/// Maximum DC Bus voltage for running motor
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MaximumBusVoltage {
@@ -251,6 +265,7 @@ impl Ord for MaximumBusVoltage {
     }
 }
 
+/// Automatic retry attempts
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum AutoRetryTimes {

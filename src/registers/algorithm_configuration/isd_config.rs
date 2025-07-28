@@ -1,9 +1,12 @@
+//! Section 7.7.1.1
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
-/// Data model for the Initial Speed Detection (ISD) configuration register.
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+/// Register to configure initial speed detect settings.
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct IsdConfig {
     /// ISD Enable.
     /// 1 = Enable ISD, 0 = Disable ISD
@@ -58,13 +61,18 @@ pub struct IsdConfig {
 }
 
 impl Register for IsdConfig {
-    const ADDRESS: u16 = ISD_CONFIG;
+    const ADDRESS: u12 = ISD_CONFIG;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
+/// Minimum Speed threshold to resynchronize to close loop (% of MAX_SPEED)
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ResyncThreshold {
@@ -118,6 +126,7 @@ pub enum ResyncThreshold {
     P100 = 0xF,
 }
 
+/// Brake current threshold
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum BrakeCurrentThreshold {
@@ -147,6 +156,7 @@ pub enum BrakeCurrentThreshold {
     A8_0 = 0x7,
 }
 
+/// A set of durations in milliseconds or seconds.
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum TimeFormatA {
@@ -200,6 +210,7 @@ pub enum TimeFormatA {
     S15 = 0xF,
 }
 
+/// BEMF threshold to detect if motor is stationary
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum BemfStationaryVoltageThreshold {
@@ -229,6 +240,8 @@ pub enum BemfStationaryVoltageThreshold {
     MV1500 = 0x7,
 }
 
+/// Speed threshold used to transition to open loop during reverse drive
+/// (% of MAX_SPEED)
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ReverseDriveHandoffThreshold {
@@ -282,6 +295,7 @@ pub enum ReverseDriveHandoffThreshold {
     P100 = 0xF,
 }
 
+/// Open loop current limit during reverse drive
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ReverseDriveOpenLoopCurrent {

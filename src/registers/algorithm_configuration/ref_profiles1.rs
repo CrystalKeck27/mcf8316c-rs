@@ -1,8 +1,12 @@
+//! Section 7.7.1.9
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+/// Register to configure reference profile1
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct RefProfiles1 {
     /// Configuration for reference profiles
     #[bits(29..=30, rw)]
@@ -22,13 +26,18 @@ pub struct RefProfiles1 {
 }
 
 impl Register for RefProfiles1 {
-    const ADDRESS: u16 = REF_PROFILES1;
+    const ADDRESS: u12 = REF_PROFILES1;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
+/// Configuration for Reference profiles
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum RefProfileConfig {

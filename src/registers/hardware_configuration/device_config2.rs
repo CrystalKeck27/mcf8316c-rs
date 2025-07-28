@@ -1,9 +1,12 @@
+//! Section 7.7.3.3
+
 use super::*;
 use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+/// Register to configure device
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct DeviceConfig2 {
     /// Input frequency on speed pin for frequency based motor control that
     /// corresponds to 100% duty cycle. Input duty cycle = Input frequency /
@@ -54,13 +57,19 @@ pub struct DeviceConfig2 {
 }
 
 impl Register for DeviceConfig2 {
-    const ADDRESS: u16 = DEVICE_CONFIG2;
+    const ADDRESS: u12 = DEVICE_CONFIG2;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
+/// Device enters sleep mode when input source is held at or below the
+/// sleep entry threshold for SLEEP_ENTRY_TIME
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum SleepEntryTime {
@@ -78,6 +87,7 @@ pub enum SleepEntryTime {
     Ms200 = 0x3,
 }
 
+/// Clock source
 #[bitenum(u2, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 #[repr(u8)]
@@ -93,6 +103,7 @@ pub enum ClockSource {
     External = 0x3,
 }
 
+/// External clock configuration
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ExternalClockFrequency {

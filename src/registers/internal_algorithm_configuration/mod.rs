@@ -1,3 +1,5 @@
+//! Section 7.7.4
+
 pub mod int_algo1;
 pub mod int_algo2;
 

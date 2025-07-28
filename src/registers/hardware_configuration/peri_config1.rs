@@ -1,10 +1,15 @@
+//! Section 7.7.3.4
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
+/// Register to configure PERI_CONFIG1 register
 pub const PERI_CONFIG1_RESET: u32 = 0b01000000_00000000_00000000_00000000;
 
-#[bitfield(u32, default = PERI_CONFIG1_RESET)]
-#[derive(Debug, PartialEq, Eq)]
+/// Register to peripheral
+#[bitfield(u32, debug, default = PERI_CONFIG1_RESET)]
+#[derive(PartialEq, Eq)]
 pub struct PeriConfig1 {
     /// Spread Spectrum Modulation disable.
     /// 0 = SSM is Enabled, 1 = SSM is Disabled
@@ -43,13 +48,18 @@ pub struct PeriConfig1 {
 }
 
 impl Register for PeriConfig1 {
-    const ADDRESS: u16 = PERI_CONFIG1;
+    const ADDRESS: u12 = PERI_CONFIG1;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
+/// DIR pin override
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum DirectionPinOverride {
@@ -67,6 +77,8 @@ pub enum DirectionPinOverride {
     Hardware2 = 0x3,
 }
 
+/// Difference between final speed and present speed below which
+/// active braking will be applied
 #[bitenum(u4, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum BrakeDeltaLimit {
@@ -117,6 +129,7 @@ pub enum BrakeDeltaLimit {
     P100 = 0xF,
 }
 
+/// Modulation Index limit below which active braking will be applied
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ModulationIndexLimit {

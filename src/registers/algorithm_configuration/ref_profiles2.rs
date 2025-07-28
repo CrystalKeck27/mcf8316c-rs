@@ -1,8 +1,12 @@
+//! Section 7.7.1.10
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::bitfield;
 
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+/// Register to configure reference profile2
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct RefProfiles2 {
     /// 3 LSB for Duty Cycle A
     #[bits(28..=30, rw)]
@@ -22,9 +26,13 @@ pub struct RefProfiles2 {
 }
 
 impl Register for RefProfiles2 {
-    const ADDRESS: u16 = REF_PROFILES2;
+    const ADDRESS: u12 = REF_PROFILES2;
 
     fn value(&self) -> u32 {
         self.raw_value()
+    }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
     }
 }

@@ -1,3 +1,5 @@
+//! Section 7.7.2
+
 pub mod fault_config1;
 pub mod fault_config2;
 

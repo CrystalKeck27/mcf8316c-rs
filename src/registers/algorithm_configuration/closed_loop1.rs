@@ -1,7 +1,11 @@
+//! Section 7.7.1.5
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32, default = 0x0)]
+/// Register to configure close loop settings1
+#[bitfield(u32, debug, default = 0x0)]
 #[derive(PartialEq, Eq)]
 pub struct ClosedLoop1 {
     /// Enable overmodulation.
@@ -58,13 +62,18 @@ pub struct ClosedLoop1 {
 }
 
 impl Register for ClosedLoop1 {
-    const ADDRESS: u16 = CLOSED_LOOP1;
+    const ADDRESS: u12 = CLOSED_LOOP1;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
+/// Closed loop acceleration.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 #[bitenum(u5, exhaustive = true)]
 pub enum ClosedLoopAcceleration {
@@ -166,6 +175,7 @@ pub enum ClosedLoopAcceleration {
     NoLimit = 0x1F,
 }
 
+/// PWM output frequency.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 #[bitenum(u4, exhaustive = false)]
 pub enum PwmOutputFrequency {
@@ -205,6 +215,7 @@ pub enum PwmOutputFrequency {
     // Not Applicable
 }
 
+/// FG select
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 #[bitenum(u2, exhaustive = false)]
 pub enum FgSelect {
@@ -219,6 +230,7 @@ pub enum FgSelect {
     OpenLoopFirstRun = 0x2,
 }
 
+/// FG Division factor
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 #[bitenum(u4, exhaustive = true)]
 pub enum FgDiv {
@@ -273,6 +285,7 @@ pub enum FgDiv {
     Div15 = 0xF,
 }
 
+/// FG output BEMF threshold
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 #[bitenum(u3, exhaustive = false)]
 pub enum FgBemfThreshold {

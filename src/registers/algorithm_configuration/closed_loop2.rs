@@ -1,8 +1,12 @@
+//! Section 7.7.1.6
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+/// Register to configure close loop settings2
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct ClosedLoop2 {
     /// Motor stop options
     #[bits(28..=30, rw)]
@@ -26,20 +30,27 @@ pub struct ClosedLoop2 {
 }
 
 impl Register for ClosedLoop2 {
-    const ADDRESS: u16 = CLOSED_LOOP2;
+    const ADDRESS: u12 = CLOSED_LOOP2;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
+/// Motor stop options
 #[bitenum(u3, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MotorStop {
     /// Hi-Z
     #[strum(serialize = "Hi-Z")]
     HiZ = 0x0,
-    // Not Applicable
+    /// Not Applicable
+    #[strum(serialize = "Not Applicable")]
+    NotApplicable = 0x1,
     /// Low side braking
     #[strum(serialize = "Low Side Braking")]
     LowSideBraking = 0x2,
@@ -55,6 +66,7 @@ pub enum MotorStop {
     // Not Defined
 }
 
+/// Brake time during motor stop
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, strum::Display)]
 pub enum MotorStopBrakeTime {
@@ -136,6 +148,7 @@ impl Ord for MotorStopBrakeTime {
     }
 }
 
+/// A set of percentages in decreasing order.
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum PercentDecreasing {
@@ -204,6 +217,8 @@ impl Ord for PercentDecreasing {
     }
 }
 
+/// 8-bit values for motor phase inductance. See Table 7-2 for values of
+/// phase resistance
 #[bitenum(u8, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MotorResistance {
@@ -994,6 +1009,8 @@ impl PartialOrd for MotorResistance {
     }
 }
 
+/// 8-bit values for motor phase inductance. See Table 7-3 for values of
+/// phase inductance
 #[bitenum(u8, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MotorInductance {

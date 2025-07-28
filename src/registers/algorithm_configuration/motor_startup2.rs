@@ -1,8 +1,12 @@
+//! Section 7.7.1.4
+
 use super::*;
+use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+/// Register to configure motor startup settings2
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct MotorStartup2 {
     /// Open loop current limit
     #[bits(27..=30, rw)]
@@ -37,13 +41,18 @@ pub struct MotorStartup2 {
 }
 
 impl Register for MotorStartup2 {
-    const ADDRESS: u16 = MOTOR_STARTUP2;
+    const ADDRESS: u12 = MOTOR_STARTUP2;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
+/// Open to closed loop handoff threshold (% of MAX_SPEED)
 #[bitenum(u5, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum OpenCloseLoopHandoffThreshold {
@@ -146,6 +155,7 @@ pub enum OpenCloseLoopHandoffThreshold {
 }
 
 // I have no idea why they did it this way
+/// Align angle
 #[bitenum(u5, exhaustive = false)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum AlignAngle {
@@ -239,6 +249,7 @@ pub enum AlignAngle {
     // Reserved
 }
 
+/// Frequency of first cycle during start-up (% of MAX_SPEED)
 #[bitenum(u4, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum SlowFirstCycleFrequency {
@@ -292,6 +303,8 @@ pub enum SlowFirstCycleFrequency {
     P50 = 0xF,
 }
 
+/// Ramp rate for reducing difference between estimated theta and open
+/// loop theta
 #[bitenum(u3, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, strum::Display)]
 pub enum ThetaErrorRampRate {

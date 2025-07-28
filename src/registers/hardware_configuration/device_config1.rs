@@ -1,9 +1,12 @@
+//! Section 7.7.3.2
+
 use super::*;
 use arbitrary_int::*;
 use bitbybit::*;
 
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+/// Register to configure device
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct DeviceConfig1 {
     /// Selects between DAC2 and SOx channels
     #[bits(28..=29, rw)]
@@ -29,13 +32,18 @@ pub struct DeviceConfig1 {
 }
 
 impl Register for DeviceConfig1 {
-    const ADDRESS: u16 = DEVICE_CONFIG1;
+    const ADDRESS: u12 = DEVICE_CONFIG1;
 
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
+/// Selects between DAC2 and SOx channels
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum DacSoxSel {
@@ -53,6 +61,7 @@ pub enum DacSoxSel {
     Soc = 0x3,
 }
 
+/// Slew rate control for I2C pins
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum SlewRate {
@@ -93,6 +102,7 @@ impl SlewRate {
     }
 }
 
+/// Maximum DC bus voltage configuration
 #[bitenum(u2, exhaustive = true)]
 #[derive(Debug, PartialEq, Eq, strum::Display)]
 pub enum MaxBusVoltage {
