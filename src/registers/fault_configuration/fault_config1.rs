@@ -5,8 +5,8 @@ use arbitrary_int::*;
 use bitbybit::*;
 
 /// Register to configure fault settings1
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct FaultConfig1 {
     /// Current limit for Iq axis (torque) current reference in closed loop
     #[bits(27..=30, rw)]
@@ -48,6 +48,10 @@ impl Register for FaultConfig1 {
 
     fn value(&self) -> u32 {
         self.raw_value()
+    }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
     }
 }
 

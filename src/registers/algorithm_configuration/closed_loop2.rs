@@ -5,8 +5,8 @@ use arbitrary_int::*;
 use bitbybit::*;
 
 /// Register to configure close loop settings2
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct ClosedLoop2 {
     /// Motor stop options
     #[bits(28..=30, rw)]
@@ -35,6 +35,10 @@ impl Register for ClosedLoop2 {
     fn value(&self) -> u32 {
         self.raw_value()
     }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
+    }
 }
 
 /// Motor stop options
@@ -44,7 +48,9 @@ pub enum MotorStop {
     /// Hi-Z
     #[strum(serialize = "Hi-Z")]
     HiZ = 0x0,
-    // Not Applicable
+    /// Not Applicable
+    #[strum(serialize = "Not Applicable")]
+    NotApplicable = 0x1,
     /// Low side braking
     #[strum(serialize = "Low Side Braking")]
     LowSideBraking = 0x2,

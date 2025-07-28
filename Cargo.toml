@@ -17,3 +17,9 @@ embedded-hal = "1.0.0"
 split_owned = "0.1.1"
 strum = { version = "0.27.1", features = ["strum_macros", "derive"] }
 thiserror = { version = "2.0.12", default-features = false }
+
+[dev-dependencies]
+mcp2221-hal = "0.1.0"
+
+[[example]]
+name = "mcp2221"

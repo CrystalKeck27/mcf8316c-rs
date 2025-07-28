@@ -5,8 +5,8 @@ use arbitrary_int::*;
 use bitbybit::*;
 
 /// Register to configure reverse drive settings
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct RevDriveConfig {
     /// Open loop acceleration coefficient A1 during reverse drive
     #[bits(27..=30, rw)]
@@ -30,6 +30,10 @@ impl Register for RevDriveConfig {
 
     fn value(&self) -> u32 {
         self.raw_value()
+    }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
     }
 }
 

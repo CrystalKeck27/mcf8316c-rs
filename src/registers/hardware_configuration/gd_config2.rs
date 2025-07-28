@@ -8,8 +8,8 @@ use bitbybit::*;
 pub const GD_CONFIG2_RESET: u32 = 0b_00000001_01000000_00000000_00000000;
 
 /// Register to configure gated driver settings2
-#[bitfield(u32, default = GD_CONFIG2_RESET)]
-#[derive(Debug, PartialEq, Eq)]
+#[bitfield(u32, debug, default = GD_CONFIG2_RESET)]
+#[derive(PartialEq, Eq)]
 pub struct GdConfig2 {
     // #[bit(31, rw)]
     // parity: bool,
@@ -48,6 +48,10 @@ impl Register for GdConfig2 {
         }
         // TODO: Verify that this is the correct way to handle the buck_ps_dis bit
         value ^ (1 << 24) // Invert the buck_ps_dis bit
+    }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
     }
 }
 

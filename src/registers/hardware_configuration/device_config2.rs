@@ -5,8 +5,8 @@ use arbitrary_int::*;
 use bitbybit::*;
 
 /// Register to configure device
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct DeviceConfig2 {
     /// Input frequency on speed pin for frequency based motor control that
     /// corresponds to 100% duty cycle. Input duty cycle = Input frequency /
@@ -61,6 +61,10 @@ impl Register for DeviceConfig2 {
 
     fn value(&self) -> u32 {
         self.raw_value()
+    }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
     }
 }
 

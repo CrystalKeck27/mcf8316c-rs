@@ -5,8 +5,8 @@ use arbitrary_int::*;
 use bitbybit::*;
 
 /// Register to configure reference profile3
-#[bitfield(u32, default = 0x0)]
-#[derive(Debug, PartialEq, Eq)]
+#[bitfield(u32, debug, default = 0x0)]
+#[derive(PartialEq, Eq)]
 pub struct RefProfiles3 {
     /// 4 LSB for Duty Cycle E
     #[bits(27..=30, rw)]
@@ -30,6 +30,10 @@ impl Register for RefProfiles3 {
 
     fn value(&self) -> u32 {
         self.raw_value()
+    }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
     }
 }
 

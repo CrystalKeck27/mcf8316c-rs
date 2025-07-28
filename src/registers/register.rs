@@ -7,4 +7,7 @@ pub trait Register {
 
     /// Returns the value to be sent on the i2c bus.
     fn value(&self) -> u32;
+
+    /// Creates a new instance of the register with the given value.
+    fn from_value(value: u32) -> Self;
 }

@@ -11,6 +11,9 @@
 //! ## Warning
 //! This chip uses I2C clock stretching. Make sure that your I2C implementation supports clock stretching.
 //! 
+//! ## Example
+//! For example usage, see the `examples` directory.
+//! 
 
 #![no_std]
 #![deny(missing_docs)]

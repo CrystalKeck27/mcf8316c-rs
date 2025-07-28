@@ -8,8 +8,8 @@ use bitbybit::*;
 pub const PERI_CONFIG1_RESET: u32 = 0b01000000_00000000_00000000_00000000;
 
 /// Register to peripheral
-#[bitfield(u32, default = PERI_CONFIG1_RESET)]
-#[derive(Debug, PartialEq, Eq)]
+#[bitfield(u32, debug, default = PERI_CONFIG1_RESET)]
+#[derive(PartialEq, Eq)]
 pub struct PeriConfig1 {
     /// Spread Spectrum Modulation disable.
     /// 0 = SSM is Enabled, 1 = SSM is Disabled
@@ -52,6 +52,10 @@ impl Register for PeriConfig1 {
 
     fn value(&self) -> u32 {
         self.raw_value()
+    }
+
+    fn from_value(value: u32) -> Self {
+        Self::new_with_raw_value(value)
     }
 }
 
