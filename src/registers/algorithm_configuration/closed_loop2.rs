@@ -30,7 +30,9 @@ pub struct ClosedLoop2 {
 }
 
 impl Register for ClosedLoop2 {
-    const ADDRESS: u12 = CLOSED_LOOP2;
+    fn address(&self) -> u12 {
+        CLOSED_LOOP2
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

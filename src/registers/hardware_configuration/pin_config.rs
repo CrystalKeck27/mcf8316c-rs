@@ -40,7 +40,9 @@ pub struct PinConfig {
 }
 
 impl Register for PinConfig {
-    const ADDRESS: u12 = PIN_CONFIG;
+    fn address(&self) -> u12 {
+        PIN_CONFIG
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

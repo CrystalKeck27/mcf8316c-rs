@@ -44,7 +44,9 @@ pub struct FaultConfig1 {
 }
 
 impl Register for FaultConfig1 {
-    const ADDRESS: u12 = FAULT_CONFIG1;
+    fn address(&self) -> u12 {
+        FAULT_CONFIG1
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

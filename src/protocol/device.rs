@@ -1,7 +1,7 @@
+use arbitrary_int::u12;
 use embedded_hal::i2c::SevenBitAddress;
 use split_owned::SplitOwned;
 use thiserror::Error;
-use arbitrary_int::u12;
 
 use super::{super::registers::Register, control_word::*};
 
@@ -120,7 +120,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
 
     /// Writes data to the specified register.
     pub fn write<T: Register>(&mut self, data: &T) -> Result<(), I2C::Error> {
-        self.write_u32(T::ADDRESS, data.value())
+        self.write_u32(data.address(), data.value())
     }
 
     /// Reads data from the specified address.
@@ -133,7 +133,8 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
         );
         let control_word = control_word.to_bytes();
         let mut data_and_crc = [0u8; 3];
-        self.i2c.write_read(self.address, &control_word, &mut data_and_crc)?;
+        self.i2c
+            .write_read(self.address, &control_word, &mut data_and_crc)?;
 
         let (data, crc) = data_and_crc.split_owned::<2, 1>();
         let crc = crc[0];
@@ -164,7 +165,8 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
         );
         let control_word = control_word.to_bytes();
         let mut data_and_crc = [0u8; 5];
-        self.i2c.write_read(self.address, &control_word, &mut data_and_crc)?;
+        self.i2c
+            .write_read(self.address, &control_word, &mut data_and_crc)?;
 
         let (data, crc) = data_and_crc.split_owned::<4, 1>();
         let crc = crc[0];
@@ -195,7 +197,8 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
         );
         let control_word = control_word.to_bytes();
         let mut data_and_crc = [0u8; 9];
-        self.i2c.write_read(self.address, &control_word, &mut data_and_crc)?;
+        self.i2c
+            .write_read(self.address, &control_word, &mut data_and_crc)?;
 
         let (data, crc) = data_and_crc.split_owned::<8, 1>();
         let crc = crc[0];
@@ -218,7 +221,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
 
     /// Reads a register value.
     pub fn read<T: Register>(&mut self) -> Result<T, ReadError<I2C::Error>> {
-        let value = self.read_u32(T::ADDRESS)?;
+        let value = self.read_u32(T::from_value(0).address())?;
         Ok(T::from_value(value))
     }
 }

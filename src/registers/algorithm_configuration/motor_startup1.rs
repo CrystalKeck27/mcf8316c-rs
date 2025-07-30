@@ -58,7 +58,9 @@ pub struct MotorStartup1 {
 }
 
 impl Register for MotorStartup1 {
-    const ADDRESS: u12 = MOTOR_STARTUP1;
+    fn address(&self) -> u12 {
+        MOTOR_STARTUP1
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

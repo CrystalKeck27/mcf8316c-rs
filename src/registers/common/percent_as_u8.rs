@@ -54,9 +54,7 @@ pub struct DutyALow3 {
 impl PercentAsU8 {
     /// Combines the high and low parts of the duty cycle A into a single `PercentAsU8`.
     pub fn combine_duty_a(high: DutyAHigh5, low: DutyALow3) -> Self {
-        PercentAsU8::new_with_raw_value(
-            (u8::from(high.inner()) << 3) | u8::from(low.inner()),
-        )
+        PercentAsU8::new_with_raw_value((u8::from(high.inner()) << 3) | u8::from(low.inner()))
     }
 
     /// Splits the `PercentAsU8` into its high and low parts for duty cycle A.
@@ -88,9 +86,7 @@ pub struct DutyELow4 {
 impl PercentAsU8 {
     /// Combines the high and low parts of the duty cycle E into a single `PercentAsU8`.
     pub fn combine_duty_e(high: DutyEHigh4, low: DutyELow4) -> Self {
-        PercentAsU8::new_with_raw_value(
-            (u8::from(high.inner()) << 4) | u8::from(low.inner()),
-        )
+        PercentAsU8::new_with_raw_value((u8::from(high.inner()) << 4) | u8::from(low.inner()))
     }
 
     /// Splits the `PercentAsU8` into its high and low parts for duty cycle E.
@@ -122,9 +118,7 @@ pub struct RefBLow1 {
 impl PercentAsU8 {
     /// Combines the high and low parts of the reference B into a single `PercentAsU8`.
     pub fn combine_ref_b(high: RefBHigh7, low: RefBLow1) -> Self {
-        PercentAsU8::new_with_raw_value(
-            (u8::from(high.inner()) << 1) | u8::from(low.inner()),
-        )
+        PercentAsU8::new_with_raw_value((u8::from(high.inner()) << 1) | u8::from(low.inner()))
     }
 
     /// Splits the `PercentAsU8` into its high and low parts for reference B.

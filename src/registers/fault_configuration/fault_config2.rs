@@ -57,7 +57,9 @@ pub struct FaultConfig2 {
 }
 
 impl Register for FaultConfig2 {
-    const ADDRESS: u12 = FAULT_CONFIG2;
+    fn address(&self) -> u12 {
+        FAULT_CONFIG2
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()
@@ -311,8 +313,3 @@ impl Ord for AutoRetryTimes {
         }
     }
 }
-
-
-
-
-

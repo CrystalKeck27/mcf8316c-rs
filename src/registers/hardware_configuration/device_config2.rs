@@ -57,7 +57,9 @@ pub struct DeviceConfig2 {
 }
 
 impl Register for DeviceConfig2 {
-    const ADDRESS: u12 = DEVICE_CONFIG2;
+    fn address(&self) -> u12 {
+        DEVICE_CONFIG2
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

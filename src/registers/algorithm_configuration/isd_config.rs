@@ -61,7 +61,9 @@ pub struct IsdConfig {
 }
 
 impl Register for IsdConfig {
-    const ADDRESS: u12 = ISD_CONFIG;
+    fn address(&self) -> u12 {
+        ISD_CONFIG
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

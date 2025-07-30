@@ -26,7 +26,9 @@ pub struct RefProfiles1 {
 }
 
 impl Register for RefProfiles1 {
-    const ADDRESS: u12 = REF_PROFILES1;
+    fn address(&self) -> u12 {
+        REF_PROFILES1
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

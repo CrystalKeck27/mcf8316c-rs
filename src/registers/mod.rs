@@ -1,7 +1,7 @@
 //! Protocol module for the MCF8316C-Q1 driver
-//! 
+//!
 //! Houses the internal register format of the MCF8316C-Q1
-//! 
+//!
 
 pub mod addresses;
 pub mod algorithm_configuration;

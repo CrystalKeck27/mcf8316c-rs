@@ -57,7 +57,9 @@ pub struct IntAlgo1 {
 }
 
 impl Register for IntAlgo1 {
-    const ADDRESS: u12 = INT_ALGO_1;
+    fn address(&self) -> u12 {
+        INT_ALGO_1
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

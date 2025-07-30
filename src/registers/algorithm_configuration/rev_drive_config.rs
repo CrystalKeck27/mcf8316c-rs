@@ -26,7 +26,9 @@ pub struct RevDriveConfig {
 }
 
 impl Register for RevDriveConfig {
-    const ADDRESS: u12 = REV_DRIVE_CONFIG;
+    fn address(&self) -> u12 {
+        REV_DRIVE_CONFIG
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

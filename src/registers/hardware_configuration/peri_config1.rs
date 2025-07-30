@@ -44,11 +44,13 @@ pub struct PeriConfig1 {
     /// Frequency range selection for PWM/duty based motor control input
     /// 0 = 325Hz to 100kHz, 1 = 10Hz to 325Hz
     #[bit(9, rw)]
-    pub speed_range_sel: bool
+    pub speed_range_sel: bool,
 }
 
 impl Register for PeriConfig1 {
-    const ADDRESS: u12 = PERI_CONFIG1;
+    fn address(&self) -> u12 {
+        PERI_CONFIG1
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

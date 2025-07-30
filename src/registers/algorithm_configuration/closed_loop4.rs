@@ -22,7 +22,9 @@ pub struct ClosedLoop4 {
 }
 
 impl Register for ClosedLoop4 {
-    const ADDRESS: u12 = CLOSED_LOOP4;
+    fn address(&self) -> u12 {
+        CLOSED_LOOP4
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

@@ -49,7 +49,9 @@ pub struct GdConfig1 {
 }
 
 impl Register for GdConfig1 {
-    const ADDRESS: u12 = GD_CONFIG1;
+    fn address(&self) -> u12 {
+        GD_CONFIG1
+    }
 
     fn value(&self) -> u32 {
         let mut value = self.raw_value();

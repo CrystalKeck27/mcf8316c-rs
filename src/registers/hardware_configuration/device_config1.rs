@@ -32,7 +32,9 @@ pub struct DeviceConfig1 {
 }
 
 impl Register for DeviceConfig1 {
-    const ADDRESS: u12 = DEVICE_CONFIG1;
+    fn address(&self) -> u12 {
+        DEVICE_CONFIG1
+    }
 
     fn value(&self) -> u32 {
         self.raw_value()

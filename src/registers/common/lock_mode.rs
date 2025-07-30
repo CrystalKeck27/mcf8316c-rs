@@ -8,31 +8,49 @@ use bitbybit::bitenum;
 #[derive(Debug, strum::Display)]
 pub enum LockModeRaw {
     /// Lock detection causes latched fault; nFAULT active; Gate driver is tristated
-    #[strum(to_string = "Lock detection causes latched fault; nFAULT active; Gate driver is tristated")]
+    #[strum(
+        to_string = "Lock detection causes latched fault; nFAULT active; Gate driver is tristated"
+    )]
     TristateNoRetry = 0x0,
     /// Lock detection causes latched fault; nFAULT active; Gate driver is tristated
-    #[strum(to_string = "Lock detection causes latched fault; nFAULT active; Gate driver is tristated")]
+    #[strum(
+        to_string = "Lock detection causes latched fault; nFAULT active; Gate driver is tristated"
+    )]
     TristateNoRetry2 = 0x1,
     /// Lock detection causes latched fault; nFAULT active; Gate driver is in high side brake mode (All high side FETs are turned ON)
-    #[strum(to_string = "Lock detection causes latched fault; nFAULT active; Gate driver is in high side brake mode (All high side FETs are turned ON)")]
+    #[strum(
+        to_string = "Lock detection causes latched fault; nFAULT active; Gate driver is in high side brake mode (All high side FETs are turned ON)"
+    )]
     HighSideBrakeNoRetry = 0x2,
     /// Lock detection causes latched fault; nFAULT active; Gate driver is in low side brake mode (All low side FETs are turned ON)
-    #[strum(to_string = "Lock detection causes latched fault; nFAULT active; Gate driver is in low side brake mode (All low side FETs are turned ON)")]
+    #[strum(
+        to_string = "Lock detection causes latched fault; nFAULT active; Gate driver is in low side brake mode (All low side FETs are turned ON)"
+    )]
     LowSideBrakeNoRetry = 0x3,
     /// Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is tristated; nFAULT active
-    #[strum(to_string = "Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is tristated; nFAULT active")]
+    #[strum(
+        to_string = "Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is tristated; nFAULT active"
+    )]
     TristateAutoRetry = 0x4,
     /// Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is tristated; nFAULT active
-    #[strum(to_string = "Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is tristated; nFAULT active")]
+    #[strum(
+        to_string = "Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is tristated; nFAULT active"
+    )]
     TristateAutoRetry2 = 0x5,
     /// Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is in high side brake mode (All high side FETs are turned ON)
-    #[strum(to_string = "Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is in high side brake mode (All high side FETs are turned ON)")]
+    #[strum(
+        to_string = "Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is in high side brake mode (All high side FETs are turned ON)"
+    )]
     HighSideBrakeAutoRetry = 0x6,
     /// Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is in low side brake mode (All low side FETs are turned ON)
-    #[strum(to_string = "Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is in low side brake mode (All low side FETs are turned ON)")]
+    #[strum(
+        to_string = "Fault automatically cleared after LCK_RETRY time. Number of retries limited to AUTO_RETRY_TIMES. If number of retries exceed AUTO_RETRY_TIMES, fault is latched; Gate driver is in low side brake mode (All low side FETs are turned ON)"
+    )]
     LowSideBrakeAutoRetry = 0x7,
     /// Lock detetection current limit is in report only but no action is taken; nFAULT active
-    #[strum(to_string = "Lock detetection current limit is in report only but no action is taken; nFAULT active")]
+    #[strum(
+        to_string = "Lock detetection current limit is in report only but no action is taken; nFAULT active"
+    )]
     Report = 0x8,
     /// Lock is disabled
     #[strum(to_string = "Lock is disabled")]
@@ -100,7 +118,10 @@ pub enum LockIlimitDriverMode {
 impl From<LockMode> for LockModeRaw {
     fn from(mode: LockMode) -> Self {
         match mode {
-            LockMode::Enable { auto_retry: allow_retry, driver_mode } => {
+            LockMode::Enable {
+                auto_retry: allow_retry,
+                driver_mode,
+            } => {
                 let mut value = match driver_mode {
                     LockIlimitDriverMode::Tristate => 0x0u8,
                     LockIlimitDriverMode::HighSideBrake => 0x2u8,
