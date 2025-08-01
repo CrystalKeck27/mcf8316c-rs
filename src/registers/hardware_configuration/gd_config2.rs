@@ -40,14 +40,14 @@ impl Register for GdConfig2 {
     const ADDRESS: u12 = GD_CONFIG2;
 
     fn value(&self) -> u32 {
-        let mut value = self.raw_value();
-        // calculate parity before flipping the buck_ps_dis bit
+        let mut value = self.raw_value() ^ (1 << 24);
+        // TODO: Verify that this is the correct way to handle the buck_ps_dis bit
+        // calculate parity after flipping the buck_ps_dis bit
         if value.count_ones() % 2 == 1 {
             // If the parity bit is not set, we set it to 1
             value |= 0x8000_0000; // Set the parity bit
         }
-        // TODO: Verify that this is the correct way to handle the buck_ps_dis bit
-        value ^ (1 << 24) // Invert the buck_ps_dis bit
+        value
     }
 
     fn from_value(value: u32) -> Self {
