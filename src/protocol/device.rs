@@ -121,7 +121,7 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     }
 
     /// Writes data to the specified register.
-    pub fn write<T: FlexibleRegister>(&mut self, data: &T) -> Result<(), I2C::Error> {
+    pub fn write<T: FlexibleRegister + ?Sized>(&mut self, data: &T) -> Result<(), I2C::Error> {
         self.write_u32(data.address(), data.value())
     }
 
