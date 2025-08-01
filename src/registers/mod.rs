@@ -11,4 +11,4 @@ pub mod hardware_configuration;
 pub mod internal_algorithm_configuration;
 mod register;
 
-pub use register::Register;
+pub use register::*;
