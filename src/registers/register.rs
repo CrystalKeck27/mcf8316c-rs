@@ -13,7 +13,7 @@ pub trait Register {
 }
 
 /// Trait implemented by all register structs that can be used flexibly, allowing for dynamic address and value.
-pub trait FlexibleRegister {
+pub trait FlexibleRegister: Sized {
     /// 12-bit address of the register.
     fn address(&self) -> u12;
 
