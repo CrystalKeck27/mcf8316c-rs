@@ -9,6 +9,8 @@ pub mod common;
 pub mod fault_configuration;
 pub mod hardware_configuration;
 pub mod internal_algorithm_configuration;
+mod any_register;
 mod register;
 
 pub use register::Register;
+pub use any_register::AnyRegister;

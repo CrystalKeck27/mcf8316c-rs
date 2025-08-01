@@ -3,6 +3,8 @@ use split_owned::SplitOwned;
 use thiserror::Error;
 use arbitrary_int::u12;
 
+use crate::registers::AnyRegister;
+
 use super::{super::registers::Register, control_word::*};
 
 /// MCF8316C-Q1 driver.
@@ -220,6 +222,22 @@ impl<I2C: embedded_hal::i2c::I2c<SevenBitAddress>> MCF8316C<I2C> {
     pub fn read<T: Register>(&mut self) -> Result<T, ReadError<I2C::Error>> {
         let value = self.read_u32(T::ADDRESS)?;
         Ok(T::from_value(value))
+    }
+
+    /// Writes a value to a register and verifies it by reading back.
+    pub fn write_verify_any(
+        &mut self,
+        data: &AnyRegister,
+    ) -> Result<(), ReadError<I2C::Error>> {
+        let address = data.address();
+        let value = data.value();
+        self.write_u32(address, value)?;
+        let read_value = self.read_u32(address)?;
+        if data.readback_matches(read_value) {
+            Ok(())
+        } else {
+            Err(ReadError::CRCMismatch)
+        }
     }
 }
 
