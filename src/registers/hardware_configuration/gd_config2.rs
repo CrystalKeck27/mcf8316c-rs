@@ -40,7 +40,7 @@ impl Register for GdConfig2 {
     const ADDRESS: u12 = GD_CONFIG2;
 
     fn value(&self) -> u32 {
-        let mut value = self.raw_value() ^ (1 << 24);
+        let mut value = self.raw_value();// ^ (1 << 24);
         // TODO: Verify that this is the correct way to handle the buck_ps_dis bit
         // calculate parity after flipping the buck_ps_dis bit
         if value.count_ones() % 2 == 1 {
