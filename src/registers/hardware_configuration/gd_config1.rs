@@ -4,16 +4,10 @@ use super::*;
 use arbitrary_int::*;
 use bitbybit::*;
 
-/// Reset value for GD_CONFIG1 register
-pub const GD_CONFIG1_RESET: u32 = 0b_00010000_00100010_10000001_00000000;
-
 /// Register to configure gated driver settings1
-#[bitfield(u32, debug, default = GD_CONFIG1_RESET)]
+#[bitfield(u32, debug, default = 0x0)]
 #[derive(PartialEq, Eq)]
 pub struct GdConfig1 {
-    /// Parity bit
-    // #[bit(31, rw)]
-    // parity: bool,
     /// Slew rate
     #[bits(26..=27, rw)]
     pub slew_rate: Option<SlewRate>,
@@ -52,12 +46,7 @@ impl Register for GdConfig1 {
     const ADDRESS: u12 = GD_CONFIG1;
 
     fn value(&self) -> u32 {
-        let mut value = self.raw_value();
-        if value.count_ones() % 2 == 1 {
-            // If the parity bit is not set, we set it to 1
-            value |= 0x8000_0000; // Set the parity bit
-        }
-        value
+        self.raw_value()
     }
 
     fn from_value(value: u32) -> Self {

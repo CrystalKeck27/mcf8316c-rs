@@ -4,23 +4,16 @@ use super::*;
 use arbitrary_int::*;
 use bitbybit::*;
 
-/// Reset value for GD_CONFIG2 register
-pub const GD_CONFIG2_RESET: u32 = 0b_00000001_01000000_00000000_00000000;
-
 /// Register to configure gated driver settings2
-#[bitfield(u32, debug, default = GD_CONFIG2_RESET)]
+#[bitfield(u32, debug, default = 0x0)]
 #[derive(PartialEq, Eq)]
 pub struct GdConfig2 {
-    // #[bit(31, rw)]
-    // parity: bool,
     /// Buck power sequencing disable.
     /// 0 = Buck power sequencing is enabled,
     /// 1 = Buck power sequencing is disabled
     ///
-    /// # This bit is write 1 to clear
-    /// The value sent over the i2c bus is inverted from whatever is set here.
-    /// This should make its behavior consistent with the other registers
-    /// with the notable exception that you cannot set the value to 1.
+    /// I know it says in the datasheet that this bit is W1C,
+    /// but it is not.
     #[bit(24, rw)]
     pub buck_ps_dis: bool,
     /// Buck current limit.
@@ -40,13 +33,6 @@ impl Register for GdConfig2 {
     const ADDRESS: u12 = GD_CONFIG2;
 
     fn value(&self) -> u32 {
-        // ^ (1 << 24);
-        // TODO: Verify that this is the correct way to handle the buck_ps_dis bit
-        // calculate parity after flipping the buck_ps_dis bit
-        // if value.count_ones() % 2 == 1 {
-        //     // If the parity bit is not set, we set it to 1
-        //     value |= 0x8000_0000; // Set the parity bit
-        // }
         self.raw_value()
     }
 
